@@ -23,7 +23,7 @@ h4 {color: black}
 h5 {color: darkgreen}
 ```
 
-**Note:** *This is a case study for the completion of my Google Data Analytics course. All [data](https://www.kaggle.com/datasets/arashnic/FitBit/data) used are real and can be downloaded from Kaggle provided by Mobius. To view the source code to produce this work, please visit my [repository](https://github.com/ilunite/demo_GDA/tree/main?tab=readme-ov-file) on GitHub. This whole case study takes approximately 15 minutes to read thoroughly. I encourage you to skip to the [conclusion](#conclusion) section first then start from the introduction since there are a lot of code chunks embedded in this case study (for those who are interested in my process).*
+**Note:** *This is a case study for the completion of my Google Data Analytics course. All [data](https://www.kaggle.com/datasets/arashnic/FitBit/data) used are real and can be downloaded from Kaggle provided by Mobius. To view the source code to produce this work, please visit my [repository](https://github.com/dalealberto/Case_Study_GDA) on GitHub. This whole case study takes approximately 15 minutes to read thoroughly. I encourage you to skip to the [conclusion](#conclusion) section first then start from the introduction since there are a lot of code chunks embedded in this case study (for those who are interested in my process).*
 
 ## <u> Introduction: </u>
 

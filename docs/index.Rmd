@@ -1,0 +1,1895 @@
+---
+title: 'Case Study: FitBit Fitness Tracker Data and Bellabeat’s Wellness Technology'
+author: "David Alberto"
+date: "2024-03-03"
+output: 
+  html_document:
+    fig_caption: yes
+    theme: cerulean
+    toc: yes
+    toc_depth: 5
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{css, echo = FALSE}
+h1 {color: darkorange}
+h2 {color: darkblue}
+h3 {color: black}
+h4 {color: black}
+h5 {color: darkgreen}
+```
+
+**Note:** *This is a case study for the completion of my Google Data Analytics course. All [data](https://www.kaggle.com/datasets/arashnic/FitBit/data) used are real and can be downloaded from Kaggle provided by Mobius. To view the source code to produce this work, please visit my [repository](https://github.com/ilunite/demo_GDA/tree/main?tab=readme-ov-file) on GitHub. This whole case study takes approximately 15 minutes to read thoroughly. I encourage you to skip to the [conclusion](#conclusion) section first then start from the introduction since there are a lot of code chunks embedded in this case study (for those who are interested in my process).*
+
+## <u> Introduction: </u>
+
+Founded in 2014 by Urška Sršen and Sandro Mur, Bellabeat is a high-tech wellness company that manufactures products specifically designed and engineered to improve the health of women. Bellabeat offers various products that can monitor the productivity, activity, and reproductive health of women. While Bellabeat is just a small company, it is successful and is capable of expanding its business in the global smart device market. To do this, Urška Sršen has urged the data analytics team to analyze the fitness data of smart devices so that the company can open up opportunities for growth. In this scenario, I am acting as part of the data analytics team for Bellabeat, tasked to focus on one of Bellabeat’s products as well as gain insights from the analysis I discover. I will ultimately provide my recommendations to the executives to help drive the marketing strategy for the company.
+
+As this is a case study for my Google Data Analytics certificate, I will be incorporating the following phases of the data life cycle: Ask, Prepare, Process, Analyze, Share, and Act.
+
+## <u> Phase 1: Ask </u>
+
+### 1.1 Business Task: {#businesstask}
+
+Business Task: Analyze customer usage of smart devices to uncover trends and generate insights that can be applied to **one** Bellabeat product and improve its overall sales.
+
+### 1.2 Key Stakeholders:
+
+The following are the key stakeholders:
+
+-   Urška Sršen: Bellabeat’s cofounder and Chief Creative Officer
+-   Sando Mur: Bellabeat’s cofounder, mathematician and a key member of the Bellabeat executive team
+-   Bellabeat marketing analytics team: A team of data analysts responsible for collecting, analyzing, and reporting
+
+## <u> Phase 2: Prepare </u>
+
+### 2.1 Data Source
+
+Data Source: FitBit Fitness Tracker Data, licensed under CC0 public domain, was downloaded from Kaggle through Mobius. The extracted file contained 18 csv files, 11 of which I used to cross reference data to each other. However, in the end, I will ultimately be using only 8 of the files for my analysis due to duplicate data. Below are the names of the files with a brief description:
+
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| **Original File Name**   | **Unique Id’s** | **Description**                                                                          |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| dailyActivity_merged     | 33              | Consolidated version of data from various files (but not all) spanning 31 days           |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| dailyCalories_merged     | 33              | Calories per day over 31 days                                                            |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| dailyIntensities_merged  | 33              | Intensities (ex: lightly active, fairly active, etc.) over 31 days                       |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| dailySteps_merged        | 33              | Steps per day over 31 days                                                               |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| heartrate_seconds_merged | 14              | Heart rate per second over 31 days                                                       |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| hourlyCalories_merged    | 33              | Calories burned per hour over                                                            |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| hourlyIntensities_merged | 33              | Total intensity and average intensity per hour over 31 days                              |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| hourlySteps_merged       | 33              | Steps per hour over 31 days                                                              |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| sleepDay_merged          | 24              | Total minutes asleep, total time in bed and how many times user went to bed over 31 days |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| minuteSleep_merged       | 24              | Sleep quality (?) per minute and logid (?) over 31 days                                  |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+| weightLogInfo_merged     | 8               | Daily weight in lbs, kg, and BMI over 31 days                                            |
++--------------------------+-----------------+------------------------------------------------------------------------------------------+
+
+### 2.2 Data Privacy and Accessibility
+
+Before moving on to cleaning the data, I must first address key concerns regarding the dataset, such as its privacy and security. Since the data is in the public domain under the [CC0 license](https://creativecommons.org/publicdomain/zero/1.0/), I am permitted to use it. It is provided by [Mobius](https://www.kaggle.com/datasets/arashnic/FitBit/data) and can be downloaded from Kaggle.
+
+### 2.3 Data Credibility, Integrity and Ambiguity {#ambiguity}
+
+This data was collected between March 12, 2016 and May 12, 2016 by Amazon Mechanical Turk, a crowdsourcing marketplace that is usually very reliable. However, there were several issues regarding the bias, credibility and integrity of this dataset:
+
+-   The descriptions claims that thirty eligible FitBit users consented to the submission of personal tracker data.” However, a quick preliminary data check revealed that there were actually thirty-three unique ID’s collected in the data. Was this simply an error in the description with rounding of number? Or did the extra ID’s collected come from individuals who did not consent to the submission of personal tracker data?
+
+-   The dataset is not only outdated, but it also supposedly contained data only between April 12, 2016 and May 12, 2016. This is in contrast to the description that claimed the data contains data between March 12, 2016 and May 12, 2016.
+
+-   A sample size of 33 participants is relatively low compared to the billions of women in the world. Other files contained as little as 8 different users with 67 records.This could result in bias and distort the result of the analysis.
+
+-   It wasn’t stated in the dataset description how the data was collected. Could the participants all have resided in a specific area or country? Were they all from a particular group, such as a fitness class? The sample population may not be representative of the whole female population who would benefit from Bellabeat’s products.
+
+-   The fields and values are ambiguous; nothing in the description of the dataset clarifies them. The following are questions I would ask from the appropriate stakeholder or source regarding the following files:
+
+    <ul style="list-style-type: none;">
+
+    <li>▸ ‘dailyActivity_merged’: what is the difference between the fields “TotalDistance,’ “TrackerDistance,” and “LoggedActivitiesDistance” Also, are the values measured in kilometers or miles? The same goes for columns 'SedentaryActiveDistance' and etc.</li>
+
+    <li>▸ ‘hourlyIntensities_merged’: what do the values in the columns ‘TotalIntensity’ and ‘AverageIntensity’ represent?</li>
+
+    <li>▸ ‘minuteSleep_merged’: what do the values in the column ‘Value’ represenent?</li>
+
+    <li>▸ ‘sleepDay_merged’: The column ‘Time’ only shows strictly ’12:00:00’ and ‘AM.’ Does this mean that the column ‘TotalMinutesAsleep’ doesn’t include the current sleep session from the time “before midnight”? This can provide misleading data since if one were to sleep tonight from 10PM – 6AM and didn’t sleep the next night, the data may only record 6 hours of sleep (from 12AM-6AM) for tomorrow instead of 8 hours of sleep for today and 0 hours tomorrow.</li>
+
+    </ul>
+
+In addition, I am only using one dataset to conduct my analysis. Perhaps I could obtain more data elsewhere then aggregate the results but for the purpose of this case study, I will continue my analysis with the data I already have.
+
+### 2.4 Sample Code to Check Data Credibility and Integrity
+
+Below are samples codes ran in R to identify the FitBit dataset’s credibility and integrity:
+
+##### 2.4.1 Load the data into R Studio
+
+The following code just loads the 'tidyverse' package within R to provide various tools that help me conduct my analysis. Note the number of rows (940) for this specific data. This means there are 940 records in total.
+
+```{r 2.4.1 Load library}
+library(tidyverse)
+
+setwd('C:\\Users\\dalea\\Documents\\Coursera\\Google Data Analytics\\FitBit Wellness Tracker Dataset\\Fitabase Data 4.12.16-5.12.16\\No longer needed')
+
+# Create first raw table for pre-processing
+FitBit_data_raw <- read_csv('dailyActivity_merged.csv')
+```
+
+##### 2.4.2 Count unique ID’s:
+
+The glimpse() function shows that there are 33 rows. This means that there are 33 unique IDs for this data.
+
+```{r 2.4.2 Count Unique IDs}
+# Create table
+daily_activity_unique_id <- unique(select(FitBit_data_raw, Id)) 
+
+# Check data
+glimpse(daily_activity_unique_id)
+```
+
+##### 2.4.3 Check count of column 'ActivityDate' (number of records):
+
+The following code checks the amount of records for each particular date. Note the number of rows which represent the different dates as well as the data type 'date'. The count represents the amount of records for the specific date.
+
+```{r 2.4.3 Plot Graph}
+# Group data
+date_count <- FitBit_data_raw %>% 
+  group_by(ActivityDate) %>% 
+  summarize(count = n())
+
+# Convert to date format  
+date_count$ActivityDate <- as.Date(date_count$ActivityDate, format = '%m/%d/%Y')
+
+# Check data to make sure data format is as intended 
+glimpse(date_count) 
+```
+
+##### 2.4.4 Plot Graph (Number of Counts by Date) {#count_date}
+
+Let's visualize the amount of records by date into a chart.
+
+```{r 2.4.4 Date Count Graph}
+# Plot graph
+ggplot(date_count, aes(x = ActivityDate, y = count)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +  
+  labs(x = "Date", y = "Count", title = "Number of Counts by Date") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+        plot.title = element_text(size = 15, hjust = 0.5))  
+```
+
+As you can see, less and less data were being recorded towards the end of the data collection (2016-05-12). It is best to filter out the last day (2016-05-12). This is because the low records can skew results tremendously and provide misleading data. I think the users just lost motivation to record their progress towards the end of the data collection.
+
+## <u> Phase 3: Process </u>
+
+### 3.1 Data Cleaning Overview
+
+Before I can analyze the dataset, I had to make sure the data is clean. Below are the following actions I took to clean the data:
+
+-   Created backup of files
+-   Transformed data type (Date columns split into date and time columns then transformed data type to ‘date’ and ‘time’)
+-   Verified transformation to appropriate data types were successful using R
+-   Removed duplicate data
+-   Checked for blanks or missing values
+-   Correct inconsistent formats (none)
+-   Checked if data needs to be standardized by removing extra/leading/trailing spaces (none)
+-   Checked for errors and typos
+-   Documented steps for data cleaning
+
+### 3.2 Check for Blanks
+
+I opened every .csv file in excel then filtered all the columns and checked for the presence of “Blanks.” There were no blanks in all of the dataset except for the column 'Fat' in the file 'weightLogInfo_merged.' Since this specific file had only 68 max records and the 'Fat' column only had 2 records, I will skip this field from analysis.
+
+### 3.3 Using BigQuery (SQL) to Clean Large Data
+
+While I can perform data cleaning in R as well, I will showcase my ability to process large files in SQL. In this case, we will clean the file 'heartrate_seconds_merged' in BigQuery since it has 2.48 millions of rows of data. Otherwise, using Excel will result in data loss.
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\heartrate_seconds.png)
+
+After importing the 'heartrate_seconds_merged.csv' file into BigQuery, I performed the following steps to clean then download the data:
+
+**1) Since using the ‘auto detect’ feature for the schema resulted in job errors, I had to manually enter the schema in JSON format.**
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\heartrate_seconds_BigQueryError_edited.png)
+
+**2) Created a schema using the following JSON format**
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\heartrate_second_BigQuery_schema.png)
+
+**3) Used CAST() function to “permanently” transform the data into the correct data type (for some reason, saving the data as .csv then verifying the data types in R showed “string” format for all columns)**
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\bq_heartrate_cleaning.png)
+
+**4) File size was too large to save the whole data locally (2,483,658 rows)**
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\bq_save_incomplete_edited.png)
+
+**5) Exported the data as a table in BigQuery to save the whole data**
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\bq_heartrate_export_to_table.png)
+
+**6) I then exported the table to Google Cloud Storage so I could download the whole data**
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\bq_heartrate_export_to_GCS.png)
+
+**7) Data was split into multiple .csv files so I downloaded all of them for analysis in R**
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\bq_heartrate_GCS_files.png)
+
+**8) Combined each .csv file into one large .csv file using R**
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\R_heartrate_combined.png)
+
+**9) Double check that the new file ‘heartrate_seconds_merged_cleaned.csv’ contains the original 2,483,658 rows but with the correct format and data types this time**
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\R_heartrate_glimpse_edited.png)
+
+### 3.4 Cross Referencing Files
+
+#### 3.4.1 To verify that the values between the files ‘dailyActivity_merged’ and ‘dailyIntensities_merged’ are the same
+
+The output of the code below reveals that the data from 'dailyIntensities_merged' is mostly the same as a portion of the data from 'dailyActivity_merged.'
+
+```{r 3.4 Comparing Tables}
+setwd('C:/Users/dalea/Documents/Coursera/Google Data Analytics/FitBit Wellness Tracker Dataset/Fitabase Data 4.12.16-5.12.16/No longer needed')
+
+# Create intensities table
+FitBit_intensities <- read_csv('dailyIntensities_merged.csv')
+
+# Create intensities table from raw table (see 2.4.1)
+intensities_from_raw <- select(FitBit_data_raw, Id, ActivityDate, SedentaryMinutes, LightlyActiveMinutes, FairlyActiveMinutes, VeryActiveMinutes, SedentaryActiveDistance, LightActiveDistance, ModeratelyActiveDistance, VeryActiveDistance)
+
+# Create duplicate of intensities table but following specific order of columns 
+intensities_from_intensities <- select(FitBit_intensities, Id, ActivityDay, SedentaryMinutes, LightlyActiveMinutes, FairlyActiveMinutes, VeryActiveMinutes, SedentaryActiveDistance, LightActiveDistance, ModeratelyActiveDistance, VeryActiveDistance)
+
+# Compare the two previous tables to check for exact match
+result_intensities <- unique(intensities_from_raw == intensities_from_intensities)
+result_intensities
+```
+
+Let's investigate why some fields are not an exact match and are showing up FALSE on the comparison test.
+
+I'll start with a logical comparison test from the common column 'SedentaryActiveDistance.'
+
+```{r 3.4.1 Logical Comparison}
+
+# Extract columns from both tables and insert to two new tables
+activities_from_raw <- select(FitBit_data_raw, SedentaryActiveDistance)
+activities_from_intensities <- select(FitBit_intensities, SedentaryActiveDistance)
+
+# Check if FALSE value is present
+result_activity <- unique(activities_from_raw == activities_from_intensities) #Compares values
+result_activity
+```
+
+To figure out why the logical value from certain rows result in FALSE, I had to locate which rows resulted in the FALSE logical value. I modified the previous code to the following:
+
+```{r}
+
+# Convert to data frame and add new column with row numbers to locate problematic rows
+result_activity <- data.frame(activities_from_raw == activities_from_intensities) %>% 
+  mutate(row_number = row_number()) 
+head(result_activity)
+
+# Filter for fields that return FALSE to determine row numbers
+false_only <- result_activity %>% 
+  filter(SedentaryActiveDistance == FALSE)
+head(false_only)
+```
+
+I located these rows in excel and noticed that the rows that contained FALSE values all contained decimals (Ex: Cell J35). See the image below:
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\FALSE_locator_edited.png)
+
+I realized that the issue was likely due to floating-point precision differences between the values stored in the Excel files and how R represents those values internally. To fix this, I can simply use the near() function to provide the level of tolerance for decimals.
+
+```{r}
+# Create tolerance up to 2 digits (least number of decimals)
+tolerance <- 1e-2
+
+# Sample calculation
+c <- 0.00999999977648258
+d <- 0.01
+
+# Output is 'TRUE' because value of c rounds up to 0.01 since tolerance is 2 digits
+e <- near(d,c, tolerance)
+e
+
+# Compare the values again with tolerance of 2 digits
+check_logical <- near(intensities_from_raw$SedentaryActiveDistance, intensities_from_intensities$SedentaryActiveDistance, tolerance)
+check_logical
+```
+
+Although we've determined the cause of the discrepancies, we don't actually need the data for the distance columns like 'SedentaryActiveDistance.' As mentioned in [section 2.3](#ambiguity), it is unclear what the values in these columns represent. We will not be analyzing these columns for this case study.
+
+#### 3.4.2 To verify that the values between ‘dailyActivity_merged’ and ‘dailyCalories_merged’ are the same
+
+```{r 3.5 Show Code, echo = TRUE, eval = FALSE}
+# Create table
+FitBit_calories <- read_csv('dailyCalories_merged.csv')
+
+# Create different tables to compare the two 
+calories_from_raw <- select(FitBit_data_raw, Calories)
+calories_from_calories <- select(FitBit_calories, Calories)
+
+# Compare the tables to check for exact match
+result_calories <- unique(calories_from_raw == calories_from_calories)
+result_calories
+```
+
+The result of the code shows that there is only one unique value ('TRUE') with the logical comparison test for the calories column. This means the two columns from the two tables are an exact match.
+
+```{r 3.5 Quiet Load, echo = FALSE}
+setwd('C:/Users/dalea/Documents/Coursera/Google Data Analytics/FitBit Wellness Tracker Dataset/Fitabase Data 4.12.16-5.12.16/No longer needed')
+
+# Create table
+FitBit_calories <- read_csv('dailyCalories_merged.csv')
+
+# Create different tables to compare the two 
+calories_from_raw <- select(FitBit_data_raw, Calories)
+calories_from_calories <- select(FitBit_calories, Calories)
+
+# Compare the tables to check for exact match
+result_calories <- unique(calories_from_raw == calories_from_calories)
+result_calories
+```
+
+#### 3.4.2 To verify that the values between ‘dailyActivity_merged’ and ‘dailySteps_merged’ are the same
+
+```{r 3.6 Show Code, echo = TRUE, eval = FALSE}
+FitBit_steps <- read_csv('dailySteps_merged.csv')
+
+steps_from_raw <- select(FitBit_data_raw, TotalSteps)
+steps_from_steps <- select(FitBit_steps, StepTotal)
+
+result_steps <- unique(steps_from_raw == steps_from_steps)
+result_steps
+```
+
+The result of the code shows that there is only one unique value ('TRUE') with the logical comparison test for the steps column. This means the two columns from the two tables are an exact match.
+
+```{r 3.6 Quiet Load, echo = FALSE}
+setwd('C:/Users/dalea/Documents/Coursera/Google Data Analytics/FitBit Wellness Tracker Dataset/Fitabase Data 4.12.16-5.12.16/No longer needed')
+
+FitBit_steps <- read_csv('dailySteps_merged.csv')
+
+steps_from_raw <- select(FitBit_data_raw, TotalSteps)
+steps_from_steps <- select(FitBit_steps, StepTotal)
+
+result_steps <- unique(steps_from_raw == steps_from_steps)
+result_steps
+```
+
+### 3.5 Remove Duplicate Entries
+
+I used the 'Remove Duplicates' Tool from Excel to remove duplicate entries for the following two files:
+
+-   'sleepDay_merged’
+-   ‘minuteSleep_merged’
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\Duplicates_edited.png)
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\Minute_sleep_edited.png)
+
+### 3.6 Data Transformation and Conversion
+
+#### 3.6.1 Cleaning the file 'dailyActivity_merged'
+
+I transformed and converted the data type ‘ActivityDate’ column from ‘dailyActivity_merged’ file to date format then created new file ‘dailyActivity_merged_cleaned’
+
+Steps:
+
+1)  saved the original ‘dailyActivity_merged’ .csv file as another .csv file with different name ‘dailyActivity_merged_cleaned.’ This will now be the file that I’ll be using for analysis
+
+2)  split the values in the ActivityDate field using “/” as the delimiter to separate the month, day and year into separate columns using the text-to-column tool
+
+3)  created a new column ‘T’ that combined the values from the new columns in a date format
+
+4)  replaced the old ActivityDate column with the values from column ‘T’ then renamed new column name to ‘Date’
+
+5)  deleted the ‘transition columns’ (columns Q, R, S and T) as they are no longer needed
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\Date_formatted_edited.png)
+
+#### 3.6.2 Cleaning the file ‘sleepDay_merged’
+
+I split the values in column ‘SleepDay’ from ‘sleepDay_merged’ according to day and time then transformed the data type to date and time
+
+Steps:
+
+1)  created a duplicate file then name it to ‘sleepDay_merged_cleaned.’ This is now the file I’ll be using for analysis
+
+2)  split the ‘SleepDay’ column into three new columns 'Date', 'Time' and 'AM_or_PM' using the Text to Columns tool then transformed the values into the correct day/time format
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\Day_Time_Edited.png)
+
+#### 3.6.3 Cleaning the file 'minuteSleep_merged'
+
+I split the values in ‘date’ column from ‘minuteSleep_merged’ file into three columns with the correct data types then capitalized column names for consistency
+
+Steps:
+
+1)  duplicated file then named it ‘minuteSleep_merged_cleaned.’ This is the file I’ll be using now for analysis
+
+2)  split the values in ‘Date’ column into three columns 'Date', 'Time', and ‘AM_or_PM’ then changed data type accordingly
+
+3)  modified the column names by capitalizing the first letter to be consistent with other columns from other files
+
+The image below shows the final cleaned version:
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\minuteSleep_edited.png)
+
+#### 3.6.4 Cleaning the file ‘weightLogInfo_merged’
+
+I split the values in ‘Date’ column from ‘weightLogInfo_merged’ file into three columns with the correct data types
+
+Steps:
+
+1)  created duplicate file with filename ‘weightLogInfo_merged_cleaned.’ This will now be the new file I’ll be using to conduct my analysis
+
+2)  split the values in ‘Date’ column into three columns 'Date', 'Time', and ‘AM_or_PM’ then changed data type accordingly
+
+3)  note: this is the only file that contains blanks or missing values. I will not be analyzing the column ‘Fat’
+
+The image below is the final cleaned version of the file:
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\weightLog_edited.png)
+
+#### 3.6.5 Cleaning the files 'hourlyIntensities_merged' and 'hourlyCalories_merged'
+
+I splitting the date values into 'Date', 'Time', and 'AM_or_PM' for ‘hourlyIntensities_merged’ and 'hourlyCalories_merged’
+
+I repeated the cleaning process of splitting the date values into ‘date’, ‘time’ and ‘AM_or_PM’ columns then transformed the data type accordingly for the following files:
+
+-   hourlyIntensities_merged
+-   hourlyCalories_merged
+
+Steps:
+
+1)  I created a duplicate file then renamed it as the originally file but adding ‘\_cleaned’ to the end of it
+
+2)  performed the same data transformation steps as in the previous examples then verified in R that the columns are of the correct data type
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\hourlyIntensities_edited.png)
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\hourlyCalories_edited.png)
+
+![](C:\Users\dalea\Pictures\GDA%20Case%20Study%201%20-%20Wellness%20Technology\glimpse_hourlyIntensities_edited.png)
+
+## <u> Phase 4: Analyze & Share </u>
+
+### 4.1 Overview of Files to Analyze
+
+Now that I’ve done all the necessary cleaning for all the data, I’m left with the following eights files to work with for the analysis:
+
+-   dailyActivity_merged_cleaned
+-   hourlyCalories_merged_cleaned
+-   hourlyIntensities_merged_cleaned
+-   hourlySteps_merged_cleaned
+-   minuteSleep_merged_cleaned
+-   sleepDay_merged_cleaned
+-   weightLogInfo_merged_cleaned
+-   heartrate_seconds_merged_cleaned
+
+### 4.2 Load all the cleaned files and R packages
+
+Here, you can check the metadata of all the cleaned files I will be analyzing, from the number of rows to the data types of each column.
+
+I've already installed the packages 'tidyverse' and 'knitr' so I don't need to include that code below. If you are replicating the steps I took, you will need to install the appropriate packages using the install.packages() function. Example: install.packages('tidyverse').
+
+```{r 4.2 Load Clean Data}
+library(tidyverse)
+library(knitr)
+setwd('C:\\Users\\dalea\\Documents\\Coursera\\Google Data Analytics\\FitBit Wellness Tracker Dataset\\Fitabase Data 4.12.16-5.12.16')
+daily_activity <- read_csv('dailyActivity_merged_cleaned.csv')
+heart_rate <- read_csv('heartrate_seconds_merged_cleaned.csv')
+hourly_calories <- read_csv('hourlyCalories_merged_cleaned.csv')
+hourly_intensities <- read_csv('hourlyIntensities_merged_cleaned.csv')
+hourly_steps <- read_csv('hourlySteps_merged_cleaned.csv')
+minutes_sleep <- read_csv('minuteSleep_merged_cleaned.csv')
+daily_sleep <- read_csv('sleepDay_merged_cleaned.csv')
+weight_log <- read_csv('weightLogInfo_merged_cleaned.csv')
+```
+
+### 4.3 Analyzing ‘dailyActivity_merged_cleaned’
+
+#### 4.3.1 FitBit User Types on Daily Usage
+
+Before analyzing our data, it would be helpful to know what proportion of users consistently track their activity using FitBIt both throughout the day and month.
+
+The table I created below determines what proportion of users use the FitBit device for specific durations throughout the day. The table is grouped by 'Id.'
+
+```{r 4.3.1 Table}
+# Create table on average daily usage of FitBit grouped by 'Id' 
+daily_usage <- daily_activity %>% 
+  group_by(Id) %>% 
+  mutate(Usage_Total = SedentaryMinutes + LightlyActiveMinutes +
+           FairlyActiveMinutes + VeryActiveMinutes) %>% 
+  summarize(Usage_Total = mean(Usage_Total)) %>% 
+  mutate(Usage_Total_Percentage = (Usage_Total/1440) * 100) %>%  #There are 1440 minutes in 24 hours
+  mutate(Usage_Type = case_when(
+    Usage_Total_Percentage > 90 ~ 'More than 90% of the day',
+    Usage_Total_Percentage <= 90 & Usage_Total_Percentage >= 60 ~ 'Between 60-90% of the day'))
+
+glimpse(daily_usage)
+
+# Create table on percentage of user type grouped by 'Usage_Type'
+daily_usage_user_type <- daily_usage %>% 
+  group_by(Usage_Type) %>% 
+  summarize(Usage_Type_Count = n()) %>% 
+  mutate(Usage_Type_Percentage = paste0(round(Usage_Type_Count/nrow(daily_usage) * 100), '%'))
+
+glimpse(daily_usage_user_type)
+```
+
+```{r 4.3.1 Show Code, echo = TRUE, eval = FALSE}
+# Create pie chart
+ggplot(daily_usage_user_type, aes(x = '', y = Usage_Type_Count, fill = Usage_Type)) +
+  geom_bar(stat = 'identity', colour = 'black') +
+  coord_polar(theta = 'y') +
+  theme_void() +
+  geom_text(aes(label = Usage_Type_Percentage), position = position_stack(vjust = 0.5)) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(title = 'Average Daily FitBit Usage',  fill = 'FitBit Usage') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+The pie chart shows 55% of the FitBit users used their FitBit device more than 90% of the day, while the remaining users used the device between 60-90% of the day.
+
+```{r 4.3.1 Output, echo = FALSE, message = FALSE}
+# Create pie chart
+ggplot(daily_usage_user_type, aes(x = '', y = Usage_Type_Count, fill = Usage_Type)) +
+  geom_bar(stat = 'identity', colour = 'black') +
+  coord_polar(theta = 'y') +
+  theme_void() +
+  geom_text(aes(label = Usage_Type_Percentage), position = position_stack(vjust = 0.5)) +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  labs(title = 'Average Daily FitBit Usage',  fill = 'FitBit Usage') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+#### 4.3.2 FitBit User Types on Monthly Usage
+
+I created a table to determine the proportion of users that use the FitBit device Every day, more than half the month, and less than half the month.
+
+```{r}
+# Count number of unique days in 'daily_activity'
+Total_Days = daily_activity %>% 
+  summarize(Total_Days = n_distinct(Date)) %>% 
+  pull(Total_Days)
+
+# Check data
+Total_Days
+
+# Create table on average monthly usage of FitBit grouped by 'Id'
+monthly_usage <- daily_activity %>% 
+  group_by(Id) %>% 
+  summarize(Usage_Days = n()) %>% 
+  mutate(Usage_Days_percentage = Usage_Days/Total_Days*100) %>% 
+  mutate(User_Type = case_when(
+    Usage_Days_percentage == 100 ~ 'Every day',
+    Usage_Days_percentage < 100 & Usage_Days_percentage >= 50 ~ 'More than half the month',
+    Usage_Days_percentage < 50 ~ 'Less than half the month'))
+
+# Categorize the 'User_Type' in order
+User_Type_Order <- c('Every day', 'More than half the month', 'Less than half the month')
+monthly_usage$User_Type <- factor(monthly_usage$User_Type, levels = User_Type_Order)
+
+# Check data
+glimpse(monthly_usage)
+
+# Create table on of percentage of user type grouped by 'usage_type'
+monthly_usage_percentage <- monthly_usage %>% 
+  group_by(User_Type) %>% 
+  summarize(User_Type_Count = n()) %>% 
+  mutate(Percentage = paste0(round(User_Type_Count/nrow(monthly_usage)*100), '%'))
+
+# Check data
+glimpse(monthly_usage_percentage)
+```
+
+```{r 4.3.2 Show Code, eval=FALSE, echo=TRUE}
+# Create pie chart
+ggplot(monthly_usage_percentage, aes(x = '', y = User_Type_Count, fill = User_Type)) +
+  geom_bar(stat = 'identity', colour = 'black') +
+  coord_polar(theta = 'y', start = 1.273*pi) +
+  theme_void() +
+  geom_text(aes(label = Percentage), position = position_stack(vjust = 0.5)) +
+  guides(fill = guide_legend(reverse = FALSE)) +
+  labs(title = 'Average Monthly FitBit Usage',  fill = 'FitBit Usage') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5)) +
+  scale_fill_manual(values = c("Every day" = "turquoise1", 
+                               "More than half the month" = "springgreen4", 
+                               "Less than half the month" = "indianred2"))
+```
+
+Nearly two-thirds of the users used their FitBit device every day while only 3% of the users used their device less than half of the month.
+
+```{r 4.3.2 Output, echo = FALSE, message = FALSE}
+# Create pie chart
+ggplot(monthly_usage_percentage, aes(x = '', y = User_Type_Count, fill = User_Type)) +
+  geom_bar(stat = 'identity', colour = 'black') +
+  coord_polar(theta = 'y', start = 1.273*pi) +
+  theme_void() +
+  geom_text(aes(label = Percentage), position = position_stack(vjust = 0.5)) +
+  guides(fill = guide_legend(reverse = FALSE)) +
+  labs(title = 'Average Monthly FitBit Usage',  fill = 'FitBit Usage') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5)) +
+  scale_fill_manual(values = c("Every day" = "turquoise1", 
+                               "More than half the month" = "springgreen4", 
+                               "Less than half the month" = "indianred2"))
+```
+
+#### 4.3.3 Daily Steps {#dailyactivitysteps}
+
+I created a table on daily steps that filtered out the last date due to the unusually low records on that specific day, as mentioned in [section 2.4.4](#count_date) and shown on the chart.
+
+```{r 4.3.3 Daily Steps Table}
+# Grouped then filter out last date due to unusually low records that can skew data
+daily_steps <- daily_activity %>% 
+  group_by(Date) %>% 
+  summarise(Avg_Total_Steps = mean(TotalSteps)) %>% 
+  filter(Date != '2016-05-12')
+
+# Check data
+glimpse(daily_steps)
+
+# Store average steps in variable
+mean_steps <- mean(daily_steps$Avg_Total_Steps)
+mean_steps
+```
+
+```{r 4.3.3 Show Code, eval= FALSE, echo=TRUE}
+# Create graph
+ggplot(daily_steps, aes(x = Date, y = Avg_Total_Steps)) +
+  geom_bar(stat = 'identity', fill = 'chocolate', color = 'black', width = 1) +
+  labs(x = 'Date', y = 'Steps', title = 'Average Daily Steps') +
+  theme(axis.text.x = element_text(angle=15, vjust=1, hjust=1), 
+        plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(method= 'loess', se=FALSE, colour = 'chocolate4', linetype = 'dashed') +
+  geom_smooth(method= lm, se=FALSE, colour = 'darkblue') +
+  coord_cartesian(ylim = c(6000, 9000)) +
+  annotate('text', x = mean(daily_steps$Date), y = 8600, 
+           label = paste('Average =', round(mean_steps), 'steps'), size = 4, colour = 'red')
+```
+
+The graph shows a slight downtrend in average steps for the overall FitBit user population from this data alone. However, interestingly enough, the results will be the opposite when we filter the data to include only those who have also recorded their sleep duration. I discuss this in detail in [section 4.8.2](#sleepmerged).
+
+```{r 4.3.3 Output, echo=FALSE, message=FALSE}
+# Create graph
+ggplot(daily_steps, aes(x = Date, y = Avg_Total_Steps)) +
+  geom_bar(stat = 'identity', fill = 'chocolate', color = 'black', width = 1) +
+  labs(x = 'Date', y = 'Steps', title = 'Average Daily Steps') +
+  theme(axis.text.x = element_text(angle=15, vjust=1, hjust=1), 
+        plot.title = element_text(hjust = 0.5)) +
+  geom_smooth(method= 'loess', se=FALSE, colour = 'chocolate4', linetype = 'dashed') +
+  geom_smooth(method= lm, se=FALSE, colour = 'darkblue') +
+  coord_cartesian(ylim = c(6000, 9000)) +
+  annotate('text', x = mean(daily_steps$Date), y = 8600, 
+           label = paste('Average =', round(mean_steps), 'steps'), size = 4, colour = 'red')
+```
+
+#### 4.3.4 Daily Steps and Calories Burned From Users Without Sleep Data {#nosleepdata}
+
+I want to know how the data looks when filtering only data from users that did not record their sleep.
+
+```{r 4.3.4 Table}
+# Check for unique combinations of 'Time' and 'AM_or_PM' values
+daily_sleep_Time_check <- unique(paste(daily_sleep$Time, daily_sleep$AM_or_PM))
+daily_sleep_Time_check
+
+# Merged 'daily_activity' and 'daily_sleep' to filter data with activity and sleep records
+daily_combined <- merge(daily_activity, daily_sleep, by = c('Date', 'Id'))
+
+# Get the list of Ids that had records for both daily activities and sleep 
+daily_combined_unique_id <- daily_combined %>% 
+  distinct(Id) 
+
+# Check data
+glimpse(daily_combined_unique_id)
+
+# Create table that filters out the Ids from 'daily_combined_unique_id' 
+daily_activity_ids_without_sleep_record <- daily_activity %>% 
+  filter(!Id %in% daily_combined_unique_id) %>% 
+  filter(Date != '2016-05-12') # Filter out last day '2016-05-12' due to outlier results 
+
+# Check data
+glimpse(daily_activity_ids_without_sleep_record)
+
+# Create new table that tracks average Steps, Calories, and Activity grouped by 'Date'
+daily_activity_ids_without_sleep_record_avg <- daily_activity_ids_without_sleep_record %>% 
+  group_by(Date) %>% 
+  summarize(Steps = mean(TotalSteps), Calories = mean(Calories), 
+            LightlyActiveMinutes = mean(LightlyActiveMinutes),
+            FairlyActiveMinutes = mean(FairlyActiveMinutes),
+            VeryActiveMinutes = mean(VeryActiveMinutes))
+
+# Calculate the averages for Steps and Calories
+Steps_Avg_ids_without_sleep_record <- mean(daily_activity_ids_without_sleep_record_avg$Steps)
+Calories_Avg_ids_without_sleep_record <- mean(daily_activity_ids_without_sleep_record_avg$Calories)
+```
+
+```{r 4.3.4 Show Code, echo = TRUE, eval = FALSE}
+# Plot stacked bar graph
+ggplot(daily_activity_ids_without_sleep_record_avg, aes(x = Date)) +
+  geom_bar(aes(y = Steps, fill = 'Steps'), stat = 'identity', color = 'black') +
+  geom_bar(aes(y = Calories, fill = 'Calories'), stat = 'identity', color = 'black') +
+  geom_hline(yintercept = Steps_Avg_ids_without_sleep_record, linetype = 'dashed', 
+             colour = 'red', linewidth = 0.75) +
+  geom_smooth(aes(y = Steps), method = lm, se = FALSE) +
+  geom_hline(yintercept = Calories_Avg_ids_without_sleep_record, linetype = 'dashed', 
+             colour = 'red', linewidth = 0.75) +
+  geom_smooth(aes(y = Calories), method = lm, se = FALSE) +
+  labs(title = 'Daily Steps and Calories', subtitle ='From FitBit Users Without Sleep Records',
+       y = 'Value') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5),
+        plot.subtitle = element_text(size = 8),
+        legend.title = element_blank()) + 
+  scale_fill_manual(values = c('Steps' = 'skyblue', 'Calories' = 'lightgoldenrod3')) +
+  annotate('text', x = as.Date('2016-04-27'), y = 9100, 
+           label = paste0('Average Steps: ', round(Steps_Avg_ids_without_sleep_record), '/day'), 
+           colour = 'darkred') +
+  annotate('text', x = as.Date('2016-04-27'), y = -300, 
+           label = paste0('Average Calories Burned: ', round(Calories_Avg_ids_without_sleep_record), '/day'), 
+           colour = 'darkred')
+```
+
+There is a slight downtrend in steps taken and calories burned throughout the month for FitBit users who did not record their sleep patterns at all.
+
+```{r 4.3.4 Output, echo = FALSE, message = FALSE}
+# Plot stacked bar graph
+ggplot(daily_activity_ids_without_sleep_record_avg, aes(x = Date)) +
+  geom_bar(aes(y = Steps, fill = 'Steps'), stat = 'identity', color = 'black') +
+  geom_bar(aes(y = Calories, fill = 'Calories'), stat = 'identity', color = 'black') +
+  geom_hline(yintercept = Steps_Avg_ids_without_sleep_record, linetype = 'dashed', 
+             colour = 'red', linewidth = 0.75) +
+  geom_smooth(aes(y = Steps), method = lm, se = FALSE) +
+  geom_hline(yintercept = Calories_Avg_ids_without_sleep_record, linetype = 'dashed', 
+             colour = 'red', linewidth = 0.75) +
+  geom_smooth(aes(y = Calories), method = lm, se = FALSE) +
+  labs(title = 'Daily Steps and Calories', subtitle ='From FitBit Users Without Sleep Records',
+       y = 'Value') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5),
+        plot.subtitle = element_text(size = 8),
+        legend.title = element_blank()) + 
+  scale_fill_manual(values = c('Steps' = 'skyblue', 'Calories' = 'lightgoldenrod3')) +
+  annotate('text', x = as.Date('2016-04-27'), y = 9100, 
+           label = paste0('Average Steps: ', round(Steps_Avg_ids_without_sleep_record), '/day'), 
+           colour = 'darkred') +
+  annotate('text', x = as.Date('2016-04-27'), y = -300, 
+           label = paste0('Average Calories Burned: ', round(Calories_Avg_ids_without_sleep_record), '/day'), 
+           colour = 'darkred')
+```
+
+#### 4.3.5 Daily Activity Level Based on Activity Type
+
+I created a table on daily activity levels that filtered out the last date since it has an unusually low amount of records compared to the average day. I also create a variable to store the average values of various activity types based on the date.
+
+```{r 4.3.5 Table}
+# Filter out last date due to unusually low records that can skew data
+daily_active_minutes <- daily_activity %>% 
+  group_by(Date) %>% 
+  summarise(Lightly_Active_Minutes = mean(LightlyActiveMinutes), 
+            Fairly_Active_Minutes = mean(FairlyActiveMinutes),
+            Very_Active_Minutes = mean(VeryActiveMinutes)) %>% 
+  filter(Date != '2016-05-12')
+
+# Check data
+glimpse(daily_active_minutes)
+
+# Store average values for various activitly levels in separate variables
+mean_lightly_active <- mean(daily_active_minutes$Lightly_Active_Minutes)
+mean_fairly_active <- mean(daily_active_minutes$Fairly_Active_Minutes)
+mean_very_active <- mean(daily_active_minutes$Very_Active_Minutes)
+
+# Check average values
+mean_lightly_active
+mean_fairly_active
+mean_very_active
+```
+
+```{r 4.3.5 Show Code, eval= FALSE, echo=TRUE}
+# Create graph
+ggplot(daily_active_minutes, aes(x = Date)) +
+  geom_line(aes(y = Lightly_Active_Minutes, color = "Lightly Active")) +
+  geom_line(aes(y = Fairly_Active_Minutes, color = "Fairly Active")) +
+  geom_line(aes(y = Very_Active_Minutes, color = "Very Active")) +
+  labs(x = "Date", y = "Minutes", title = "Daily Activity", colour = "Activity") +
+  scale_color_manual(values = c("Lightly Active" = "dodgerblue", "Fairly Active" = "olivedrab", "Very Active" = "tomato1"),
+                     breaks = c("Lightly Active", "Fairly Active", "Very Active")) +
+  geom_smooth(aes(y = Lightly_Active_Minutes), method = "loess", se = FALSE, color = "blue", linewidth = 1) +
+  geom_smooth(aes(y = Fairly_Active_Minutes), method = "loess", se = FALSE, color = "darkgreen", linewidth = 1) +
+  geom_smooth(aes(y = Very_Active_Minutes), method = "loess", se = FALSE, color = "red", linewidth = 1) +
+  theme(axis.text.x = element_text(angle = 15, vjust = 1, hjust = 1),
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5),
+        legend.title = element_text(size = 15)) +
+  scale_y_continuous(breaks = seq(0, 250, by = 25)) +
+  annotate("text", x = as.Date("2016-05-07"), y = 225, label = 'Average = 194', colour = "blue") +
+  annotate("text", x = as.Date("2016-05-07"), y = 65, label = 'Average = 21', colour = "red") +
+  annotate("text", x = as.Date("2016-05-07"), y = 50, label = 'Average = 13', colour = "darkgreen")
+```
+
+While there is no clear trend in the fairly active and very active levels, there is a slight downtrend, in the light activity level.
+
+```{r 4.3.5 Output, echo=FALSE, message=FALSE}
+ggplot(daily_active_minutes, aes(x = Date)) +
+  geom_line(aes(y = Lightly_Active_Minutes, color = "Lightly Active")) +
+  geom_line(aes(y = Fairly_Active_Minutes, color = "Fairly Active")) +
+  geom_line(aes(y = Very_Active_Minutes, color = "Very Active")) +
+  labs(x = "Date", y = "Minutes", title = "Daily Activity", colour = "Activity") +
+  scale_color_manual(values = c("Lightly Active" = "dodgerblue", "Fairly Active" = "olivedrab", "Very Active" = "tomato1"),
+                     breaks = c("Lightly Active", "Fairly Active", "Very Active")) +
+  geom_smooth(aes(y = Lightly_Active_Minutes), method = "loess", se = FALSE, color = "blue", linewidth = 1) +
+  geom_smooth(aes(y = Fairly_Active_Minutes), method = "loess", se = FALSE, color = "darkgreen", linewidth = 1) +
+  geom_smooth(aes(y = Very_Active_Minutes), method = "loess", se = FALSE, color = "red", linewidth = 1) +
+  theme(axis.text.x = element_text(angle = 15, vjust = 1, hjust = 1),
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5),
+        legend.title = element_text(size = 15)) +
+  scale_y_continuous(breaks = seq(0, 250, by = 25)) +
+  annotate("text", x = as.Date("2016-05-07"), y = 225, label = 'Average = 194', colour = "blue") +
+  annotate("text", x = as.Date("2016-05-07"), y = 65, label = 'Average = 21', colour = "red") +
+  annotate("text", x = as.Date("2016-05-07"), y = 50, label = 'Average = 13', colour = "darkgreen")
+```
+
+#### 4.3.6 Daily Calories
+
+I created a table on daily calories grouped by date. Again, the last date was filtered out.
+
+```{r 4.3.6 Table}
+# Create table on daily calories
+daily_calories<- daily_activity %>% 
+  group_by(Date) %>% 
+  summarise(Calories_Burned = mean(Calories)) %>% 
+  filter(Date != '2016-05-12')
+
+# Check data
+glimpse(daily_calories)
+
+# Create variable to store average calories
+mean_calories <- mean(daily_calories$Calories_Burned)
+mean_calories
+```
+
+```{r 4.3.6 Show Code, eval= FALSE, echo=TRUE}
+ggplot(daily_calories, aes(x = Date, y = Calories_Burned)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black", width = 1) +
+  labs(x = "Date", y = "Calories", title = "Average Daily Calories Burned") +
+  theme(axis.text.x = element_text(angle = 15, vjust = 1, hjust = 1),
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5),
+        legend.title = element_text(size = 15)) +
+  geom_smooth(method = lm, se = FALSE, colour = 'darkblue') +
+  annotate("text", x = mean(daily_calories$Date), y = 2550, label = "Average = 2328 calories", size = 4, colour = "red")
+```
+
+There also seems to be a slight decrease in calories burned over time.
+
+```{r 4.3.6 Output, echo=FALSE, message=FALSE}
+ggplot(daily_calories, aes(x = Date, y = Calories_Burned)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black", width = 1) +
+  labs(x = "Date", y = "Calories", title = "Average Daily Calories Burned") +
+  theme(axis.text.x = element_text(angle = 15, vjust = 1, hjust = 1),
+        axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5),
+        legend.title = element_text(size = 15)) +
+  geom_smooth(method = lm, se = FALSE, colour = 'darkblue') +
+  annotate("text", x = mean(daily_calories$Date), y = 2550, label = "Average = 2328 calories", size = 4, colour = "red")
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   Nearly two-thirds of the FitBit users consistently used their FitBit device every day and more than half of all users use their device throughout 90% of the day
+
+-   There is a slight downtrend in steps taken, light activity, and calories burned throughout the one-month record
+
+### 4.4 Analyzing ‘hourlyCalories_merged_cleaned’ {#calories}
+
+I created a table on hourly calories then grouped the data by time. I also created variables to store the highlighted areas on the next graph.
+
+```{r 4.4 Table}
+# Create a new column in datetime 24h format 
+hourly_calories$Time_24h <- as.POSIXct(paste(hourly_calories$Time, hourly_calories$AM_or_PM), format = '%I:%M:%S %p')
+
+glimpse(hourly_calories)
+
+# Get current date
+current_date <- Sys.Date()
+
+
+# Highlighted areas on Calories 24h graph 
+highlight3 <- data.frame(xmin = as.POSIXct(paste(current_date, '04:30:00')),
+                         xmax = as.POSIXct(paste(current_date, '06:30:00')),
+                         ymin = 63, ymax = Inf)
+
+highlight4 <- data.frame(xmin = as.POSIXct(paste(current_date, '11:30:00')),
+                         xmax = as.POSIXct(paste(current_date, '19:30:00')),
+                         ymin = 63, ymax = Inf)
+```
+
+```{r 4.4 Show Code, eval= FALSE, echo=TRUE}
+# Plot Graph
+ggplot(hourly_calories, aes(x = Time_24h, y = Calories)) +
+  geom_rect(data = highlight3, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'lightcoral', alpha = 0.5, inherit.aes = FALSE) +
+  geom_rect(data = highlight4, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'lightcoral', alpha = 0.5, inherit.aes = FALSE) +
+  geom_point(colour = 'darkblue', alpha = 0.6) +
+  geom_jitter(colour = 'darkblue', alpha = 0.1) +
+  geom_smooth(method = 'loess', span = 0.1, se = FALSE) +
+  theme(axis.text.x = element_blank(), axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -100, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -100, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -100, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -100, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -100, label = '23:59h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '05:30:00')), y = -10, label = '(05:00-07:00h)', 
+           colour = 'darkred') +
+  annotate('text', x = as.POSIXct(paste(current_date, '15:30:00')), y = -10, label = '(12:00-20:00h)', 
+           colour = 'darkred') +
+  coord_cartesian(ylim = c(0, 1000), clip = 'off') +
+  labs(x = 'Time of Day', y = 'Calories Burned', title = 'Instances of Calories Burned Hourly') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5)) 
+```
+
+The highlighted regions on the graph indicate the typical times of day when the highest calorie burn occurs. Because the data on time is measured strictly by the hour on the dot (Ex: 12:00am, 1:00am, 2:00am, etc.), I added jitter to the plots which results in slight variations of positions to the plots that overlap. This way, it is easier to visualize the areas with the greatest intensity (recorded points).
+
+The blue trend line show a slight increase in average calories burned starting from 5am and lasting until 8pm.
+
+```{r 4.4 Output, echo=FALSE, message=FALSE}
+# Plot Graph
+ggplot(hourly_calories, aes(x = Time_24h, y = Calories)) +
+  geom_rect(data = highlight3, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'lightcoral', alpha = 0.5, inherit.aes = FALSE) +
+  geom_rect(data = highlight4, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'lightcoral', alpha = 0.5, inherit.aes = FALSE) +
+  geom_point(colour = 'darkblue', alpha = 0.6) +
+  geom_jitter(colour = 'darkblue', alpha = 0.1) +
+  geom_smooth(method = 'loess', span = 0.1, se = FALSE) +
+  theme(axis.text.x = element_blank(), axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -100, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -100, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -100, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -100, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -100, label = '23:59h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '05:30:00')), y = -10, label = '(05:00-07:00h)', 
+           colour = 'darkred') +
+  annotate('text', x = as.POSIXct(paste(current_date, '15:30:00')), y = -10, label = '(12:00-20:00h)', 
+           colour = 'darkred') +
+  coord_cartesian(ylim = c(0, 1000), clip = 'off') +
+  labs(x = 'Time of Day', y = 'Calories Burned', title = 'Instances of Calories Burned Hourly') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5)) 
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   Calorie burns higher throughout the day between 5am and 8pm, with instances of the highest calories burned occurring between 12pm-8pm
+
+### 4.5 Analyzing ‘hourlyIntensities_merged_cleaned’ {#hourlyintensities}
+
+I created a table on the hourly intensities grouped by time.
+
+```{r 4.5 Table}
+# Create a new column in datetime 24h format 
+hourly_intensities$Time_24h <- as.POSIXct(paste(hourly_intensities$Time, hourly_intensities$AM_or_PM), format = "%I:%M:%S %p")
+
+# Get current date
+current_date <- Sys.Date()
+
+# Summarize data
+hourly_intensities_avg <- hourly_intensities %>% 
+  group_by(Time_24h) %>% 
+  summarize(Intensity_Average = mean(TotalIntensity))
+
+# Check data
+glimpse(hourly_intensities_avg)
+
+# Calculate the value at the peaks
+hourly_intensities_at_12h_18h <- hourly_intensities_avg %>% 
+  filter(Time_24h %in% as.POSIXct(paste(current_date, c('12:00:00', '18:00:00'))))
+
+# Check data
+glimpse(hourly_intensities_at_12h_18h)
+
+# Rounding the values at the peaks
+round(hourly_intensities_at_12h_18h$Intensity_Average[1], 1)
+round(hourly_intensities_at_12h_18h$Intensity_Average[2], 1)
+```
+
+```{r 4.5 Show Code, echo = TRUE, eval = FALSE}
+# Plotting the graph
+ggplot(hourly_intensities_avg, aes(x = Time_24h, y = Intensity_Average)) +
+  geom_area(colour = 'black', fill = 'skyblue', alpha = 0.5) +
+  theme(axis.text.x = element_blank(), axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -2.5, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -2.5, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -2.5, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -2.5, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -2.5, label = '23:59h') +
+  coord_cartesian(ylim = c(0, 25), clip = 'off') +
+  labs(x = 'Time of Day', y = 'Intensity', title = 'Hourly Average Intensity') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5)) +
+  geom_point(data = hourly_intensities_at_12h_18h, aes(x = Time_24h, y = Intensity_Average), 
+             colour = 'darkred') +
+  annotate('text', x = as.POSIXct(hourly_intensities_at_12h_18h$Time_24h[1]), 
+           y = hourly_intensities_at_12h_18h$Intensity_Average[1] + 1, 
+           label = paste(round(hourly_intensities_at_12h_18h$Intensity_Average[1], 1))) +
+  annotate('text', x = as.POSIXct(hourly_intensities_at_12h_18h$Time_24h[2]), 
+           y = hourly_intensities_at_12h_18h$Intensity_Average[2] + 1, 
+           label = paste(round(hourly_intensities_at_12h_18h$Intensity_Average[2], 1)))
+```
+
+While it is ambiguous what the value of intensity represents (see [section 2.3](#ambiguity)), it is clear that the level of intensity peaks at 12:00h and 18:00h. Perhaps the increased intensity level at noon is due to people going for a walk on their way to grab lunch during working days. The peak intensity level in the evening may be due to activities after work such as running errands, or perhaps this is the peak time of exercise for most people.
+
+```{r 4.5 Output, echo=FALSE, message=FALSE}
+# Plotting the graph
+ggplot(hourly_intensities_avg, aes(x = Time_24h, y = Intensity_Average)) +
+  geom_area(colour = 'black', fill = 'skyblue', alpha = 0.5) +
+  theme(axis.text.x = element_blank(), axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -2.5, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -2.5, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -2.5, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -2.5, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -2.5, label = '23:59h') +
+  coord_cartesian(ylim = c(0, 25), clip = 'off') +
+  labs(x = 'Time of Day', y = 'Intensity', title = 'Hourly Average Intensity') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5)) +
+  geom_point(data = hourly_intensities_at_12h_18h, aes(x = Time_24h, y = Intensity_Average), 
+             colour = 'darkred') +
+  annotate('text', x = as.POSIXct(hourly_intensities_at_12h_18h$Time_24h[1]), 
+           y = hourly_intensities_at_12h_18h$Intensity_Average[1] + 1, 
+           label = paste(round(hourly_intensities_at_12h_18h$Intensity_Average[1], 1))) +
+  annotate('text', x = as.POSIXct(hourly_intensities_at_12h_18h$Time_24h[2]), 
+           y = hourly_intensities_at_12h_18h$Intensity_Average[2] + 1, 
+           label = paste(round(hourly_intensities_at_12h_18h$Intensity_Average[2], 1)))
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   Intensities are the highest at 12pm and 6pm
+
+### 4.6 Analyzing ‘'hourlySteps_merged_cleaned’
+
+I created a table on hourly steps grouped according to time. I also created two variables to store the data for the highlighted areas on the next graph.
+
+```{r 4.6 Table}
+# Create a new column in datetime 24h format 
+hourly_steps$Time_24h <- as.POSIXct(paste(hourly_steps$Time, hourly_steps$AM_or_PM), format = '%I:%M:%S %p')
+
+# Get current date
+current_date <- Sys.Date()
+
+# Summarize data
+hourly_steps_avg <- hourly_steps %>% 
+  group_by(Time_24h) %>% 
+  summarize(Steps_Average = mean(StepTotal))
+
+glimpse(hourly_steps_avg)
+
+#Highlighted areas on Calories 24h graph 
+highlight5 <- data.frame(xmin = as.POSIXct(paste(current_date, '11:45:00')),
+                         xmax = as.POSIXct(paste(current_date, '14:30:00')),
+                         ymin = 0, ymax = Inf)
+
+highlight6 <- data.frame(xmin = as.POSIXct(paste(current_date, '17:30:00')),
+                         xmax = as.POSIXct(paste(current_date, '19:30:00')),
+                         ymin = 0, ymax = Inf)
+```
+
+```{r 4.6 Show Code, eval= FALSE, echo=TRUE}
+# Plotting the graph
+ggplot(hourly_steps_avg, aes(x = Time_24h, y = Steps_Average)) +
+  geom_rect(data = highlight5, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = "lightcoral", alpha = 0.5, inherit.aes = FALSE) +
+  geom_rect(data = highlight6, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = "lightcoral", alpha = 0.5, inherit.aes = FALSE) +
+  geom_area(colour = 'black', fill = 'skyblue', alpha = 0.5) +
+  theme(axis.text.x = element_blank(), axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -75, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -75, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -75, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -75, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -75, label = '23:59h') +
+  annotate("text", x = as.POSIXct(paste(current_date, '13:00:00')), y = -13, label = "(12:00-14:00h)", 
+           colour = 'darkred') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:30:00')), y = -12, label = '(18:00-19:00h)', 
+           colour = 'darkred') +
+  coord_cartesian(ylim = c(0, 650), clip = 'off') +
+  labs(x = 'Time of Day', y = 'Steps', title = 'Hourly Average Steps') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+The amount of steps taken by the hour peaks at similar time frames as the peak calories burned and intensity discussed in [section 4.4](#calories) and [section 4.5](#intensity), respectively. Based on the data, it is probable that steps influence the intensity levels of the day and the calories burned. At the very least, there is a correlation between these data.
+
+```{r 4.6 Output, echo=FALSE, message=FALSE}
+# Plotting the graph
+ggplot(hourly_steps_avg, aes(x = Time_24h, y = Steps_Average)) +
+  geom_rect(data = highlight5, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = "lightcoral", alpha = 0.5, inherit.aes = FALSE) +
+  geom_rect(data = highlight6, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = "lightcoral", alpha = 0.5, inherit.aes = FALSE) +
+  geom_area(colour = 'black', fill = 'skyblue', alpha = 0.5) +
+  theme(axis.text.x = element_blank(), axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -75, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -75, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -75, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -75, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -75, label = '23:59h') +
+  annotate("text", x = as.POSIXct(paste(current_date, '13:00:00')), y = -13, label = "(12:00-14:00h)", 
+           colour = 'darkred') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:30:00')), y = -12, label = '(18:00-19:00h)', 
+           colour = 'darkred') +
+  coord_cartesian(ylim = c(0, 650), clip = 'off') +
+  labs(x = 'Time of Day', y = 'Steps', title = 'Hourly Average Steps') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   FitBit Users walk the most around lunch (12-2pm) and dinner (6-7pm) time
+
+### 4.7 Analyzing ‘minuteSleep_merged_cleaned’ {#minutesleep}
+
+I created a table on sleep time grouped by the minute. I also create two variables that store the information for the highlighted areas on the next graph.
+
+```{r 4.7 Table}
+# Create a new column in datetime 24h format 
+minutes_sleep$Time_24h <- as.POSIXct(paste(minutes_sleep$Time, minutes_sleep$AM_or_PM), format = '%I:%M:%S %p')
+
+# Get current date
+current_date <- Sys.Date()
+
+# Highlighted areas on Calories 24h graph 
+highlight5 <- data.frame(xmin = as.POSIXct(paste(current_date, '00:00:00')),
+                         xmax = as.POSIXct(paste(current_date, '11:30:00')),
+                         ymin = 0, ymax = Inf)
+
+highlight6 <- data.frame(xmin = as.POSIXct(paste(current_date, '20:00:00')),
+                         xmax = as.POSIXct(paste(current_date, '23:59:00')),
+                         ymin = 0, ymax = Inf)
+```
+
+```{r 4.7 Show Code, echo = TRUE, eval = FALSE}
+# Plotting the graph
+ggplot(minutes_sleep, aes(x = Time_24h)) +
+  geom_rect(data = highlight5, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'royalblue4', alpha = 0.3, inherit.aes = FALSE) +
+  geom_rect(data = highlight6, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'royalblue4', alpha = 0.3, inherit.aes = FALSE) +
+  geom_area(colour = 'slateblue4', fill = 'slateblue4', stat =  'bin', binwidth = 360, alpha = 0.5) +
+  labs(x = 'Time of Day', y = 'Relative Sleep Sessions', title = 'Sleep Sessions Distribution') +
+  theme(axis.text.x = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -225, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -225, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -225, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -225, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -225, label = '23:59h') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5)) +
+  coord_cartesian(ylim = c(0, 2300), clip = "off") +
+  annotate('text', x = as.POSIXct(paste(current_date, '10:15:00')), y = 1750, label = '11:30h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '21:15:00')), y = 1750, label = '20:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '07:00:00')), y = 2125, label = '05:30h', 
+           colour = 'darkred') +
+  geom_vline(xintercept = as.POSIXct(paste(current_date, '11:30:00')),
+             linetype = 'dashed') +
+  geom_vline(xintercept = as.POSIXct(paste(current_date, '20:00:00')),
+             linetype = 'dashed') +
+  geom_vline(xintercept = as.POSIXct(paste(current_date, '05:30:00')),
+             linetype = 'dashed', colour = 'red') +
+  annotate('text', x = as.POSIXct(paste(current_date, '22:30:00')), y = 2125, 
+           label = '\U0001F6CF', size = 8)
+```
+
+While there are records of sleep data throughout the whole day, it is clear that the there is a sharp increase in sleep sessions starting 8pm and peaks around 4am. At 5:30am, there is a sharp decrease in sleep session until 11:30am. This means that many people start going to bed by 8pm and the majority of people would have already been awake by 11:30am.
+
+```{r 4.7 Output, echo=FALSE, message=FALSE}
+# Plotting the graph
+ggplot(minutes_sleep, aes(x = Time_24h)) +
+  geom_rect(data = highlight5, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'royalblue4', alpha = 0.3, inherit.aes = FALSE) +
+  geom_rect(data = highlight6, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'royalblue4', alpha = 0.3, inherit.aes = FALSE) +
+  geom_area(colour = 'slateblue4', fill = 'slateblue4', stat =  'bin', binwidth = 360, alpha = 0.5) +
+  labs(x = 'Time of Day', y = 'Relative Sleep Sessions', title = 'Sleep Sessions Distribution') +
+  theme(axis.text.x = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+        axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -225, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -225, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -225, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -225, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -225, label = '23:59h') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5)) +
+  coord_cartesian(ylim = c(0, 2300), clip = "off") +
+  annotate('text', x = as.POSIXct(paste(current_date, '10:15:00')), y = 1750, label = '11:30h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '21:15:00')), y = 1750, label = '20:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '07:00:00')), y = 2125, label = '05:30h', 
+           colour = 'darkred') +
+  geom_vline(xintercept = as.POSIXct(paste(current_date, '11:30:00')),
+             linetype = 'dashed') +
+  geom_vline(xintercept = as.POSIXct(paste(current_date, '20:00:00')),
+             linetype = 'dashed') +
+  geom_vline(xintercept = as.POSIXct(paste(current_date, '05:30:00')),
+             linetype = 'dashed', colour = 'red') +
+  annotate('text', x = as.POSIXct(paste(current_date, '22:30:00')), y = 2125, 
+           label = '\U0001F6CF', size = 8)
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   Most FitBit users start going to bed by 8pm and the majority are already awake by 11:30am
+
+### 4.8 Analyzing ‘sleepDay_merged_cleaned’
+
+#### 4.8.1 Merging tables 'daily_activity' with 'daily_sleep'
+
+I first created a table on sleep time then created another table that is a merged version of the sleep table and the daily activity table from [section 4.3](#dailyactivity). This means that only data by users that includes records from both **sleep time** and **daily activity** will be selected. If a user records data on sleep but not daily activity on a particular day (or vice versa), the data will be not be included. This merged table provides a deeper analysis on the correlation between daily activity and sleep time on the same users.
+
+```{r 4.8.1 Table}
+# Check for unique combinations of 'Time' and 'AM_or_PM' values (from 4.3.4)
+daily_sleep_Time_check <- unique(paste(daily_sleep$Time, daily_sleep$AM_or_PM))
+daily_sleep_Time_check
+
+# Merged 'daily_activity' and 'daily_sleep' to check for correlation (from 4.3.4)
+daily_combined <- merge(daily_activity, daily_sleep, by = c('Date', 'Id'))
+
+# Filter out last day '2016-05-12' due to outlier results (low activity due to last day?)
+daily_combined <- daily_combined %>% 
+  filter(Date != '2016-05-12')
+
+# Add a new column for the time difference between 'Time_In_Bed' and 'Minutes_Asleep'
+daily_combined$Time_In_Bed_Awake <- daily_combined$TotalTimeInBed - daily_combined$TotalMinutesAsleep
+
+# Convert to Day_Of_Week with 'ordered' data type
+weekday_order <- c('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
+daily_combined$Day_Of_Week <- substr(format(daily_combined$Date, '%a'), 1, 3)
+daily_combined$Day_Of_Week <- ordered(daily_combined$Day_Of_Week, levels = weekday_order)
+
+# Check that the data makes sense
+glimpse(daily_combined)
+
+# Summarize the data by date
+daily_combined_avg_by_date <- daily_combined %>% 
+  group_by(Date) %>% 
+  summarize(Time_In_bed = mean(TotalTimeInBed), Minutes_Asleep = mean(TotalMinutesAsleep),
+            Calories = mean(Calories), Sedentary_Minutes = mean(SedentaryMinutes), 
+            Lightly_Active_Minutes = mean(LightlyActiveMinutes), 
+            Fairly_Active_Minutes = mean(FairlyActiveMinutes), 
+            Very_Active_Minutes = mean(VeryActiveMinutes),
+            Steps = mean(TotalSteps), Distance = mean(TotalDistance),
+            Time_In_Bed_Awake = mean(Time_In_Bed_Awake))
+
+# Check the new table to see if it makes sense
+glimpse(daily_combined_avg_by_date)
+
+# Summarize the data by day of week
+daily_combined_avg_by_day_of_week <- daily_combined %>% 
+  group_by(Day_Of_Week) %>% 
+  summarize(Time_In_bed = mean(TotalTimeInBed), Minutes_Asleep = mean(TotalMinutesAsleep),
+            Calories = mean(Calories), Sedentary_Minutes = mean(SedentaryMinutes), 
+            Lightly_Active_Minutes = mean(LightlyActiveMinutes), 
+            Fairly_Active_Minutes = mean(FairlyActiveMinutes), 
+            Very_Active_Minutes = mean(VeryActiveMinutes),
+            Steps = mean(TotalSteps), Distance = mean(TotalDistance),
+            Time_In_Bed_Awake = mean(Time_In_Bed_Awake))
+
+# Check the new table to see if it makes sense
+glimpse(daily_combined_avg_by_day_of_week)
+
+# Calculate the mean for 'daily_combined_avg_by_day_of_week'
+Sleep_Avg_Day_Of_Week <- mean(daily_combined_avg_by_day_of_week$Minutes_Asleep)
+Steps_Avg_Day_Of_Week <- mean(daily_combined_avg_by_day_of_week$Steps)
+Calories_Avg_Day_Of_Week <- mean(daily_combined_avg_by_day_of_week$Calories)
+
+# Calculate the mean for 'daily_combined_avg_by_date'
+Sleep_Avg_Date <- mean(daily_combined_avg_by_date$Minutes_Asleep)
+Steps_Avg_Date <- mean(daily_combined_avg_by_date$Steps)
+Calories_Avg_Date <- mean(daily_combined_avg_by_date$Calories)
+```
+
+#### 4.8.2 Plotting the steps graph from the merged table {#sleepmerged}
+
+```{r 4.8.2 Show Code, echo = TRUE, eval = FALSE}
+# Plotting the steps graph by date
+ggplot(daily_combined_avg_by_date, aes(x = Date, y = Steps)) +
+  geom_bar(stat = 'Identity', colour = 'black', fill = 'skyblue') +
+  geom_hline(yintercept = Steps_Avg_Date, linetype = 'dashed', colour = 'red',
+             linewidth = 0.75) +
+  geom_smooth(method = lm, se = FALSE, linewidth = 1.5, colour = 'darkblue') +
+  labs(title = 'Daily Steps', subtitle ='From FitBit Users With Sleep Records') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5), 
+        plot.subtitle = element_text(size = 8)) +
+  annotate('text', x = as.Date('2016-05-04'), y = 11500, 
+           label = paste0('Average Steps: ', round(Steps_Avg_Date), '/day'), 
+           colour = 'darkred')
+```
+
+In contrast to [section 4.3.3](#dailyactivitysteps), the daily steps of users who also recorded their sleep time show an uptrend in steps activity as the day passes. Does this suggest that users who are more dedicated in wearing their FitBit to record their activity make more effort in performing light activity? This could also just be a coincidence though since the merging of data omitted a large amount of records.
+
+```{r 4.8.2 Output, echo=FALSE, message=FALSE}
+# Plotting the steps graph by date
+ggplot(daily_combined_avg_by_date, aes(x = Date, y = Steps)) +
+  geom_bar(stat = 'Identity', colour = 'black', fill = 'skyblue') +
+  geom_hline(yintercept = Steps_Avg_Date, linetype = 'dashed', colour = 'red',
+             linewidth = 0.75) +
+  geom_smooth(method = lm, se = FALSE, linewidth = 1.5, colour = 'darkblue') +
+  labs(title = 'Daily Steps', subtitle ='From FitBit Users With Sleep Records') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5), 
+        plot.subtitle = element_text(size = 8)) +
+  annotate('text', x = as.Date('2016-05-04'), y = 11500, 
+           label = paste0('Average Steps: ', round(Steps_Avg_Date), '/day'), 
+           colour = 'darkred')
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   FitBit Users who had records of both steps and sleep show an uptrend in steps taken
+-   These same users take about 8600 steps per day on average
+
+#### 4.8.3 Plotting the activity graph from the merged table
+
+```{r 4.8.3 Show Code, echo = TRUE, eval = FALSE}
+# Plotting the Activity graph
+ggplot(daily_combined_avg_by_date, aes(x = Date)) +
+  geom_line(aes(y = Lightly_Active_Minutes), colour = 'skyblue') +
+  geom_line(aes(y = Fairly_Active_Minutes), colour = 'green') +
+  geom_line(aes(y = Very_Active_Minutes), colour = 'red') +
+  geom_line(aes(y = Minutes_Asleep), colour = 'violet') +
+  geom_smooth(aes(y = Lightly_Active_Minutes), method = lm, se = FALSE, colour = 'blue') +
+  geom_smooth(aes(y = Fairly_Active_Minutes), method = lm, se = FALSE, colour = 'darkgreen') +
+  geom_smooth(aes(y = Very_Active_Minutes), method = lm, se = FALSE, colour = 'darkred') +
+  geom_smooth(aes(y = Minutes_Asleep), method = lm, se = FALSE, colour = 'orchid4') +
+  labs(y = 'Minutes', title = 'Daily Activity', 
+       subtitle ='From FitBit Users With Sleep Records') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5)) +
+  annotate('text', x = as.Date('2016-05-05'), y = 480, label = 'Sleep', 
+           size = 5, colour = 'orchid4') +
+  annotate('text', x = as.Date('2016-05-05'), y = 300, label = 'Lightly Active', 
+           size = 5, colour = 'blue') +
+  annotate('text', x = as.Date('2016-05-05'), y = 60, label = 'Fairly Active', 
+           size = 5, colour = 'darkgreen') +
+  annotate('text', x = as.Date('2016-05-05'), y = 100, label = 'Very Active', 
+           size = 5, colour = 'darkred') 
+```
+
+While the "Very Active" and "Fairly Active" levels remain constant, as light activity increases, sleep duration decreases. This could suggest that an increase in light activity decreases sleep quality. However, this seems unlikely. It is more probable that the increased light activity took up more of a user's time which offered less time for sleep. If this is the case, it may be better to use time spent on light activity to perform higher activies for increased benefit.
+
+```{r 4.8.3 Output, echo = FALSE, message = FALSE}
+# Plotting the Activity graph
+ggplot(daily_combined_avg_by_date, aes(x = Date)) +
+  geom_line(aes(y = Lightly_Active_Minutes), colour = 'skyblue') +
+  geom_line(aes(y = Fairly_Active_Minutes), colour = 'green') +
+  geom_line(aes(y = Very_Active_Minutes), colour = 'red') +
+  geom_line(aes(y = Minutes_Asleep), colour = 'violet') +
+  geom_smooth(aes(y = Lightly_Active_Minutes), method = lm, se = FALSE, colour = 'blue') +
+  geom_smooth(aes(y = Fairly_Active_Minutes), method = lm, se = FALSE, colour = 'darkgreen') +
+  geom_smooth(aes(y = Very_Active_Minutes), method = lm, se = FALSE, colour = 'darkred') +
+  geom_smooth(aes(y = Minutes_Asleep), method = lm, se = FALSE, colour = 'orchid4') +
+  labs(y = 'Minutes', title = 'Daily Activity', 
+       subtitle ='From FitBit Users With Sleep Records') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5)) +
+  annotate('text', x = as.Date('2016-05-05'), y = 480, label = 'Sleep', 
+           size = 5, colour = 'orchid4') +
+  annotate('text', x = as.Date('2016-05-05'), y = 300, label = 'Lightly Active', 
+           size = 5, colour = 'blue') +
+  annotate('text', x = as.Date('2016-05-05'), y = 60, label = 'Fairly Active', 
+           size = 5, colour = 'darkgreen') +
+  annotate('text', x = as.Date('2016-05-05'), y = 100, label = 'Very Active', 
+           size = 5, colour = 'darkred') 
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   Sleep duration decreases as light activity increases
+
+#### 4.8.4 Plotting the steps graph by day of week from the merged table {#weekdaysteps}
+
+```{r 4.8.4 Show Code, echo = TRUE, eval = FALSE}
+# Plotting the steps graph 
+ggplot(daily_combined_avg_by_day_of_week, aes(x = Day_Of_Week, y = Steps)) +
+  geom_bar(stat = 'Identity', colour = 'black', fill = 'skyblue') +
+  geom_hline(yintercept = Steps_Avg_Day_Of_Week, linetype = 'dashed', colour = 'darkred',
+             linewidth = 0.75) +
+  annotate('text', x = 'Wed', y = 9800, colour = 'darkred',
+           label = paste0('Average Steps: ', round(Steps_Avg_Day_Of_Week), '/day')) +
+  annotate('text', x = 'Mon', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[1]))) +
+  annotate('text', x = 'Tue', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[2]))) +
+  annotate('text', x = 'Wed', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[3]))) +
+  annotate('text', x = 'Thu', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[4]))) +
+  annotate('text', x = 'Fri', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[5]))) +
+  annotate('text', x = 'Sat', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[6]))) +
+  annotate('text', x = 'Sun', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[7]))) +
+  labs(x = 'Day of Week', title = 'Steps by Day of the Week',
+       subtitle ='From FitBit Users With Sleep Records') +
+theme(plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+Users meet the [recommended](https://howdyhealth.tamu.edu/walking-how-many-steps-a-day/) 7000-10000 steps per day, with the highest steps falling on a Saturday. This may be due to users running errands on this day, or doing other activities like hanging out with friends. In contrast, Sunday records the least amount of steps activity. Users can use this day to increase their physical activity for a more balanced lifestyle.
+
+```{r 4.8.4 Output, echo = FALSE, message = FALSE}
+# Plotting the steps graph 
+ggplot(daily_combined_avg_by_day_of_week, aes(x = Day_Of_Week, y = Steps)) +
+  geom_bar(stat = 'Identity', colour = 'black', fill = 'skyblue') +
+  geom_hline(yintercept = Steps_Avg_Day_Of_Week, linetype = 'dashed', colour = 'darkred',
+             linewidth = 0.75) +
+  annotate('text', x = 'Wed', y = 9800, colour = 'darkred',
+           label = paste0('Average Steps: ', round(Steps_Avg_Day_Of_Week), '/day')) +
+  annotate('text', x = 'Mon', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[1]))) +
+  annotate('text', x = 'Tue', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[2]))) +
+  annotate('text', x = 'Wed', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[3]))) +
+  annotate('text', x = 'Thu', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[4]))) +
+  annotate('text', x = 'Fri', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[5]))) +
+  annotate('text', x = 'Sat', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[6]))) +
+  annotate('text', x = 'Sun', y = -250, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Steps[7]))) +
+  labs(x = 'Day of Week', title = 'Steps by Day of the Week',
+       subtitle ='From FitBit Users With Sleep Records') +
+theme(plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   FitBit Users take the most steps on Saturdays and the least steps on Sundays
+-   FitBit Users meet the [recommended](https://howdyhealth.tamu.edu/walking-how-many-steps-a-day/) 7000-10000 steps per day
+
+#### 4.8.5 Plotting calories by day of week from merged table {#weekdaycalories}
+
+```{r 4.8.5 Show Code, eval = FALSE, echo=TRUE}
+# Plotting the calories graph by day of week
+ggplot(daily_combined_avg_by_day_of_week, aes(x = Day_Of_Week, y = Calories)) +
+  geom_bar(stat = 'Identity', colour = 'black', fill = 'lightgoldenrod3') +
+  geom_hline(yintercept = Calories_Avg_Day_Of_Week, linetype = 'dashed', colour = 'darkred',
+             linewidth = 0.75) +
+  annotate('text', x = 'Wed', y = 2600, colour = 'darkred',
+           label = paste0('Average Calories: ', round(Calories_Avg_Day_Of_Week), '/day')) +
+  annotate('text', x = 'Mon', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[1]))) +
+  annotate('text', x = 'Tue', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[2]))) +
+  annotate('text', x = 'Wed', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[3]))) +
+  annotate('text', x = 'Thu', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[4]))) +
+  annotate('text', x = 'Fri', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[5]))) +
+  annotate('text', x = 'Sat', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[6]))) +
+  annotate('text', x = 'Sun', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[7]))) +
+  labs(x = 'Day of Week', title = 'Calories Burned by Day of the Week',
+       subtitle ='From FitBit Users With Sleep Records') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+The average calories burned per day is 2414 with the least amount of calories burned on Sundays.
+
+```{r 4.8.5, Output, echo = FALSE, message = FALSE}
+# Plotting the calories graph by day of week
+ggplot(daily_combined_avg_by_day_of_week, aes(x = Day_Of_Week, y = Calories)) +
+  geom_bar(stat = 'Identity', colour = 'black', fill = 'lightgoldenrod3') +
+  geom_hline(yintercept = Calories_Avg_Day_Of_Week, linetype = 'dashed', colour = 'darkred',
+             linewidth = 0.75) +
+  annotate('text', x = 'Wed', y = 2600, colour = 'darkred',
+           label = paste0('Average Calories: ', round(Calories_Avg_Day_Of_Week), '/day')) +
+  annotate('text', x = 'Mon', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[1]))) +
+  annotate('text', x = 'Tue', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[2]))) +
+  annotate('text', x = 'Wed', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[3]))) +
+  annotate('text', x = 'Thu', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[4]))) +
+  annotate('text', x = 'Fri', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[5]))) +
+  annotate('text', x = 'Sat', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[6]))) +
+  annotate('text', x = 'Sun', y = -90, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Calories[7]))) +
+  labs(x = 'Day of Week', title = 'Calories Burned by Day of the Week',
+       subtitle ='From FitBit Users With Sleep Records') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   FitBit Users burned an average of 2414 calories per day
+
+#### 4.8.6 Plotting the sleep time graph from the merged table {#sleep}
+
+```{r 4.8.6 Set Up}
+# Setting up for sleep time graph
+Sleep_Avg_Check <- ifelse(daily_combined_avg_by_day_of_week$Minutes_Asleep > Sleep_Avg_Day_Of_Week, 
+                          "Over_Avg", "Below_Avg")
+```
+
+```{r 4.8.6 Show Code, echo = TRUE, eval = FALSE}
+# Plotting the sleep time graph by day of week
+ggplot(daily_combined_avg_by_day_of_week, aes(x = Day_Of_Week, y = Minutes_Asleep)) +
+  geom_bar(stat = 'Identity', colour = 'black', 
+           aes(fill = Sleep_Avg_Check)) +
+  scale_fill_manual(values = c("Over_Avg" = "green", "Below_Avg" = "orangered3")) +
+  geom_hline(yintercept = Sleep_Avg_Day_Of_Week, linetype = 'dashed', colour = 'darkred',
+             linewidth = 0.75) +
+  annotate('text', x = 'Wed', y = 500, colour = 'darkred',
+           label = paste0('Average Sleep: ', round(Sleep_Avg_Day_Of_Week), ' minutes/day')) +
+  annotate('text', x = 'Mon', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[1]))) +
+  annotate('text', x = 'Tue', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[2]))) +
+  annotate('text', x = 'Wed', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[3]))) +
+  annotate('text', x = 'Thu', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[4]))) +
+  annotate('text', x = 'Fri', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[5]))) +
+  annotate('text', x = 'Sat', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[6]))) +
+  annotate('text', x = 'Sun', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[7]))) +
+  labs(x = 'Day of Week', y = 'Minutes Asleep', 
+       title = 'Daily Sleep Minutes by Day of the Week',
+       subtitle ='From FitBit Users With Sleep Records') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5)) + 
+  guides(fill = 'none')
+```
+
+Users get 7 hours of sleep daily on average, with the most sleep falling on Sundays and the least sleep on Thursdays.
+
+```{r 4.8.6 Output, echo = FALSE, message = FALSE}
+# Plotting the sleep time graph by day of week
+ggplot(daily_combined_avg_by_day_of_week, aes(x = Day_Of_Week, y = Minutes_Asleep)) +
+  geom_bar(stat = 'Identity', colour = 'black', 
+           aes(fill = Sleep_Avg_Check)) +
+  scale_fill_manual(values = c("Over_Avg" = "green", "Below_Avg" = "orangered3")) +
+  geom_hline(yintercept = Sleep_Avg_Day_Of_Week, linetype = 'dashed', colour = 'darkred',
+             linewidth = 0.75) +
+  annotate('text', x = 'Wed', y = 500, colour = 'darkred',
+           label = paste0('Average Sleep: ', round(Sleep_Avg_Day_Of_Week), ' minutes/day')) +
+  annotate('text', x = 'Mon', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[1]))) +
+  annotate('text', x = 'Tue', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[2]))) +
+  annotate('text', x = 'Wed', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[3]))) +
+  annotate('text', x = 'Thu', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[4]))) +
+  annotate('text', x = 'Fri', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[5]))) +
+  annotate('text', x = 'Sat', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[6]))) +
+  annotate('text', x = 'Sun', y = -15, 
+           label = paste(round(daily_combined_avg_by_day_of_week$Minutes_Asleep[7]))) +
+  labs(x = 'Day of Week', y = 'Minutes Asleep', 
+       title = 'Daily Sleep Minutes by Day of the Week',
+       subtitle ='From FitBit Users With Sleep Records') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5)) + 
+  guides(fill = 'none')
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   FitBit Users sleep the most Sundays and the least on Thursdays
+-   The average sleep duration is about 7 hours
+
+### 4.9 Analyzing ‘weightLogInfo_merged_cleaned.csv’
+
+I created a table that filtered out IDs that only provided 2 or less records. 5 unique IDs and 63 records remain down from 8 unique IDs and 67 records
+
+```{r 4.9 Table}
+# Check data
+glimpse(weight_log)
+
+# Filtered out Ids that provided 2 or less records
+weight_log_filtered <- weight_log %>% 
+  filter(!Id %in% c('1927972279', '5577150313', '1503960366'))
+
+# Check filtered data
+glimpse(weight_log_filtered)
+```
+
+```{r 4.9 Show Code, echo = TRUE, eval = FALSE}
+# Plotting the graph
+ggplot(weight_log_filtered, aes(x = Date, y = WeightKg, colour = factor(Id))) +
+  geom_line() +
+  theme_minimal() +
+  labs(x = 'Date', y = 'Weight (Kg)', title = 'Daily Change in Weight (Kg)') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5)) +
+guides(colour = 'none')
+```
+
+Each coloured line represents a user, with only 5 represented in this graph. There are no noticeable trends from the little data I analyzed.
+
+```{r Output, echo=FALSE, message=FALSE}
+# Plotting the graph
+ggplot(weight_log_filtered, aes(x = Date, y = WeightKg, colour = factor(Id))) +
+  geom_line() +
+  theme_minimal() +
+  labs(x = 'Date', y = 'Weight (Kg)', title = 'Daily Change in Weight (Kg)') +
+  theme(plot.title = element_text(size = 15, hjust = 0.5)) +
+guides(colour = 'none')
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   There is no clear trend in weight change for the 5 FitBit users that recorded their weight
+
+### 4.10 Analyzing ‘heartrate_seconds_merged_cleaned’ {#heartrate}
+
+#### 4.10.1 Plotting the graph for the hourly average heart rate
+
+I created a table to track heart rate according to the time of day. I also created variables to store the highlighted areas on the following graph.
+
+```{r 4.10.1 Table}
+# Create a new column in datetime 24h format 
+heart_rate$Time_24h <- as.POSIXct(paste(heart_rate$Time, heart_rate$AM_or_PM), format = '%H:%M:%S')
+
+# Group according to new column Time_24h 
+heart_rate_avg <- heart_rate %>% 
+  group_by(Time_24h) %>% 
+  summarise(heartrate = mean(Value))   
+
+# About 84,000 points remained after summarizing. Close to the 86,400 seconds in 1 day
+glimpse(heart_rate_avg)
+
+# Get current date
+current_date <- Sys.Date()
+
+# Highlighted areas on 24h graph
+highlight1 <- data.frame(xmin = as.POSIXct(paste(current_date, '12:00:00')),
+                         xmax = as.POSIXct(paste(current_date, '13:30:00')),
+                         ymin = -Inf, ymax = Inf)
+
+highlight2 <- data.frame(xmin = as.POSIXct(paste(current_date, '16:30:00')),
+                         xmax = as.POSIXct(paste(current_date, '19:00:00')),
+                         ymin = -Inf, ymax = Inf)
+
+# Create new table for 1st peak of heart rate
+heart_rate_peak1 <- heart_rate %>% 
+  filter(Time_24h >= as.POSIXct(paste(current_date, '12:00:00')) &
+           Time_24h <= as.POSIXct(paste(current_date, '13:30:00')))
+
+# Create new table for 2nd peak of heart rate
+heart_rate_peak2 <- heart_rate %>% 
+  filter(Time_24h >= as.POSIXct(paste(current_date, '16:30:00')) &
+           Time_24h <= as.POSIXct(paste(current_date, '19:00:00')))
+```
+
+```{r 4.10.1 Show Code, echo = TRUE, eval = FALSE}
+# Plot graph of 24h data
+ggplot(heart_rate_avg,aes(x = Time_24h,y = heartrate)) +
+  geom_rect(data = highlight1, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'lightcoral', alpha = 0.5, inherit.aes = FALSE) +
+  geom_rect(data = highlight2, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'lightcoral', alpha = 0.5, inherit.aes = FALSE) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(aes(x = Time_24h, y = heartrate), method = "loess", span = 0.1, se=FALSE) +
+  theme(axis.text.x = element_blank(), axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -15, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -15, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -15, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -15, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -15, label = '23:59h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:30:00')), y = 50, label = '(12:00-13:30h)', 
+           colour = 'darkred') +
+  annotate('text', x = as.POSIXct(paste(current_date, '17:45:00')), y = 50, label = '(16:30-19:00h)', 
+           colour = 'darkred') +  
+  coord_cartesian(ylim = c(0, 150), clip = 'off') +
+  labs(x = 'Time of Day', y = 'Heart rate', title = 'Hourly Average Heart Rate') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5))  
+```
+
+The heart rate spikes up between 12:00h-13:30h and 16:30h-19:00h, consistent with the increased steps and intensity at similar times as discussed in [section 4.5](#intensities) and [section 4.6](#calories), respectively.
+
+```{r 4.10.1 Output, echo=FALSE, message=FALSE}
+# Plot graph of 24h data
+ggplot(heart_rate_avg,aes(x = Time_24h,y = heartrate)) +
+  geom_rect(data = highlight1, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'lightcoral', alpha = 0.5, inherit.aes = FALSE) +
+  geom_rect(data = highlight2, aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), 
+            fill = 'lightcoral', alpha = 0.5, inherit.aes = FALSE) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(aes(x = Time_24h, y = heartrate), method = "loess", span = 0.1, se=FALSE) +
+  theme(axis.text.x = element_blank(), axis.title.x = element_text(margin = margin(t = 30))) +
+  annotate('text', x = as.POSIXct(paste(current_date, '00:00:00')), y = -15, label = '00:00h') + 
+  annotate('text', x = as.POSIXct(paste(current_date, '06:00:00')), y = -15, label = '06:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:00:00')), y = -15, label = '12:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '18:00:00')), y = -15, label = '18:00h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '23:59:00')), y = -15, label = '23:59h') +
+  annotate('text', x = as.POSIXct(paste(current_date, '12:30:00')), y = 50, label = '(12:00-13:30h)', 
+           colour = 'darkred') +
+  annotate('text', x = as.POSIXct(paste(current_date, '17:45:00')), y = 50, label = '(16:30-19:00h)', 
+           colour = 'darkred') +  
+  coord_cartesian(ylim = c(0, 150), clip = 'off') +
+  labs(x = 'Time of Day', y = 'Heart rate', title = 'Hourly Average Heart Rate') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15),
+        plot.title = element_text(size = 15, hjust = 0.5))  
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   Heart rate peaks between 12pm-1:30pm and 4:30pm-7pm
+
+#### 4.10.2 Analyzing the 1st peak heart rate
+
+I created a table to view the heart rate at the 1st peak around 12:00h
+
+```{r 4.10.2 Table}
+# Summarize 1st peak segment of 24h data
+heart_rate_peak1_avg <- heart_rate_peak1 %>% 
+  group_by(Time_24h) %>% 
+  summarise(heartrate = mean(Value))
+```
+
+```{r 4.10.2 Show Code, echo = TRUE, eval = FALSE}
+# Plot graph of 1st peak
+ggplot(heart_rate_peak1_avg,aes(x = Time_24h,y = heartrate)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "loess", se = FALSE, span = 0.5, linewidth = 2) +
+  labs(x = 'Time of Day', y = 'Heart rate', title = 'Peak Heart Rate at 12:30h') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15), 
+        plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+A huge portion of FitBit users had an increase in heart rate around noon.
+
+```{r 4.10.2 Output, echo = FALSE, message = FALSE}
+# Plot graph of 1st peak
+ggplot(heart_rate_peak1_avg,aes(x = Time_24h,y = heartrate)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "loess", se = FALSE, span = 0.5, linewidth = 2) +
+  labs(x = 'Time of Day', y = 'Heart rate', title = 'Peak Heart Rate at 12:30h') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15), 
+        plot.title = element_text(size = 15, hjust = 0.5))
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   Heart rate reaches an average of 100 beats per minute at 12:30pm daily for FitBit users
+
+#### 4.10.3 Analyzing the 2nd peak heart rate
+
+I created a table to view the heart rate at the 2nd peak around 17:00h and 18:30h.
+
+```{r 4.10.3 Table}
+# Summarize 2nd peak segment of 24h data
+heart_rate_peak2_avg <- heart_rate_peak2 %>% 
+  group_by(Time_24h) %>% 
+  summarise(heartrate = mean(Value))
+```
+
+```{r 4.10.3 Show Code, echo = TRUE, eval = FALSE}
+# Plot graph of 2nd peak
+ggplot(heart_rate_peak2_avg,aes(x = Time_24h,y = heartrate)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(method = 'loess', se = FALSE, span = 0.2, linewidth = 2) +
+  labs(x = 'Time of Day', y = 'Heart rate', title = 'Peak Heart Rates at 17:00h and 18:30h') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15), 
+        plot.title = element_text(size = 15, hjust = 0.5)) 
+```
+
+A large amount of FitBit users also had higher heart rates around 17:00h and 18:30h
+
+```{r 4.10.3 Output, echo = FALSE, message = FALSE}
+# Plot graph of 2nd peak
+ggplot(heart_rate_peak2_avg,aes(x = Time_24h,y = heartrate)) +
+  geom_point(alpha = 0.1) +
+  geom_smooth(method = 'loess', se = FALSE, span = 0.2, linewidth = 2) +
+  labs(x = 'Time of Day', y = 'Heart rate', title = 'Peak Heart Rates at 17:00h and 18:30h') +
+  theme(axis.title.x = element_text(size = 15),
+        axis.title.y = element_text(size = 15), 
+        plot.title = element_text(size = 15, hjust = 0.5)) 
+```
+
+<font color="brown">**Key Findings**</font>
+
+-   The heart rate also reaches an average of about 100 beats per minute both at 4:45pm and 6:30pm daily
+
+## <u> Phase 5: Act (Conclusion) </u> {#conclusion}
+
+According to my analysis, I propose three marketing strategy recommendations for Bellabeat, each substantiated by data and accompanied by actionable steps. The focus will be on Bellabeat's *Time* watch, as the [business task](#businesstask) specifically mentions only one product.
+
+#### <font color="purple">**1. Promote the use of Bellabeat's *Time* watch for fitness tracking to drive better health outcomes:**</font>
+
++--------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Data**                 | Those who consistently wore their FitBit device even [during sleep](#sleepmerged) demonstrated a sustained increase in physical activity over time compared to those who [didn't record their sleep](#nosleepdata).                                                                                                                          |
++--------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Actionable** **Steps** | -   Improve the aesthetic appeal and functionality of Bellabeat's *Time* watch to create a stylish yet practical accessory                                                                                                                                                                                                                   |
+|                          |                                                                                                                                                                                                                                                                                                                                              |
+|                          | -   Encourage Bellabeat users to view their Time watch not solely as a fashion accessory, but as a powerful tool for tracking fitness progress and motivating healthier lifestyles.                                                                                                                                                          |
+|                          |                                                                                                                                                                                                                                                                                                                                              |
+|                          | -   Launch a targeted marketing campaign emphasizing the fitness tracking capabilities of the Time watch, showcasing how users can leverage its features to monitor their activity levels and sleep patterns, set fitness goals, and track progress over time.                                                                               |
+|                          |                                                                                                                                                                                                                                                                                                                                              |
+|                          | -   Offer incentives such as exclusive access to personalized fitness challenges or rewards for achieving activity milestones, to incentivise users to utilize their Time watch as a companion in their journey towards better health and wellness.                                                                                          |
++--------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Limitations**          | From the subgroup of FitBit users mentioned in [section 4.8.2](#sleepmerged):                                                                                                                                                                                                                                                                |
+|                          |                                                                                                                                                                                                                                                                                                                                              |
+|                          | Their increase in light physical activity over time may not actually be due to them wearing the FitBit device, but rather due to their inherent motivation to be healthier. This motivation may have simply just affected their choice to record every aspect of their journey, including their sleep patterns (correlation, not causation). |
++--------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+#### <font color="purple">**2. Adjust marketing strategies to fit the average schedules and peak activity times of users based on the day of the week**</font>
+
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Data**             | FitBit user data shows consistent usage of the device throughout the week, with peaks in [calorie burn](#calories), [intensity](#hourlyintensities), and [heart rate](#heartrate) occurring around 12:00 pm and 7:00 pm.                                                                                                                                                                                                                                                                                         |
+|                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|                      | [Steps](#weekdaysteps) taken and [calories](#weekdaycalories) burned tend to be the lowest on Sundays and the highest on Saturdays, indicating potential opportunities to encourage wellness habits strategically.                                                                                                                                                                                                                                                                                               |
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Actionable Steps** | -   Since data shows that it is feasible to perform physical activities both on weekends and weekdays, particularly around noon and dinner time, Bellabeat can launch wellness initiatives targeting busy professionals and individuals looking to maintain healthy habits during the workweek. These initiatives can include lunchtime workout challenges, midday mindfulness sessions, or after-work fitness classes, all supported by the 'Time watch' as a tool for tracking progress and staying motivated. |
+|                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|                      | -   To gain new customers, Bellabeat can partner with corporate wellness programs or fitness centers during peak days and hours as this is when users are most engaged in fitness-related activities. This way, Bellabeat can promote wellness activities while positioning the 'Time watch' as an essential accessory for achieving work-life balance and holistic well-being.                                                                                                                                  |
+|                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|                      | -   During off-peak days such as Sundays, Bellabeat can launch campaigns that encourage consistency for their users to engage in regular physical activity and wellness habits. This can be in the form of outdoor fitness events, testimonials or success stories from users via email, or as simple as a phone notification with a motivational quote.                                                                                                                                                         |
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Limitations**      | -   Focusing solely on peak and off-peak activity times may overlook the individual preferences and lifestyle factors that influence users' exercise habits. Some users may prefer to exercise during off-peak hours due to personal schedules, work commitments, or other factors, while others may engage in physical activity consistently throughout the day. Ignoring these nuances could result in missed opportunities to effectively engage with users across different segments.                        |
+|                      |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|                      | -   Additionally, relying solely on FitBit user data for promotional strategies may overlook potential users who do not use fitness tracking devices or who have different activity patterns. This could lead to a lack of inclusivity in marketing efforts and limit the reach of Bellabeat's promotional campaigns.                                                                                                                                                                                            |
++----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+#### <font color="purple"> **3. Hightlight the sleep tracking capabilities of the *Time* watch to appeal to individuals who may not have initially considered it for its fitness-related features** </font>
+
++----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Data**             | FitBit users typically start going to [bed](#minutesleep) by 8:00 pm, with most users waking up starting at 05:30 am. Additionally, the average [sleep](#sleep) duration is approximately 7 hours per day, with users getting the most sleep on Sundays. |
++----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Actionable Steps** | -   Bellabeat can highlight the sleep tracking capabilities of the *Time* watch in marketing campaigns targeting individuals interested in improving their sleep quality and overall well-being.                                                         |
+|                      |                                                                                                                                                                                                                                                          |
+|                      | ```{=html}                                                                                                                                                                                                                                               |
+|                      | <!-- -->                                                                                                                                                                                                                                                 |
+|                      | ```                                                                                                                                                                                                                                                      |
+|                      | -   Promotional materials can emphasize the *Time* watch's features such as sleep monitoring, sleep stage analysis, and personalized sleep insights to encourage users to prioritize restful sleep habits and achieve better sleep patterns              |
++----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Limitations**      | Potential users may be turned off by the high price of *Time* watches since the device may come with other features they are not particularly interested in                                                                                              |
++----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+By incorporating these recommendations into its marketing strategy, Bellabeat can effectively leverage the insights from FitBit user data to position the *Time* watch as a comprehensive solution for tracking and optimizing users' health, fitness, and sleep routines throughout the week.
+
+

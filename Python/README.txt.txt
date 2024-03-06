@@ -2,8 +2,8 @@ This folder just contains my source code to:
 - extract the glossary from the Google Data Analytics course 
 - automate the process of writing which Course and Week the term was first introduced (Ex: adding 'Course # Week #')
 - sort either by:
-	> phrase alphabetically 
-	> course week 
+	> [phrase alphabetically](https://github.com/dalealberto/Case_Study_GDA/blob/main/GDA_Glossary_Sorted_By_Phrase.txt)
+	> [course week](https://github.com/dalealberto/Case_Study_GDA/blob/main/GDA_Glossary_Sorted_By_Course_Week.txt) 
 
 
 

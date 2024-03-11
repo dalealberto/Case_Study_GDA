@@ -733,9 +733,11 @@ ggplot(daily_activity_ids_without_sleep_record_avg, aes(x = Date, y = Steps)) +
   labs(title = 'Daily Steps', subtitle ='From FitBit Users Without Sleep Records') +
   theme(plot.title = element_text(size = 15, hjust = 0.5),
         plot.subtitle = element_text(size = 8)) +
-  annotate('text', x = as.Date('2016-05-04'), y = 9100, 
+  annotate('text', x = as.Date('2016-05-04'), y = 11500, 
            label = paste0('Average Steps: ', round(Steps_Avg_ids_without_sleep_record), '/day'), 
-           colour = 'darkred')
+           colour = 'darkred') +
+  coord_cartesian(ylim = c(0, 11500)) +
+  scale_y_continuous(breaks = c(3000, 6000, 9000, 12000))
 ```
 
 There is a slight downtrend in steps taken throughout the month for FitBit users who did not record their sleep patterns at all.
@@ -750,9 +752,11 @@ ggplot(daily_activity_ids_without_sleep_record_avg, aes(x = Date, y = Steps)) +
   labs(title = 'Daily Steps', subtitle ='From FitBit Users Without Sleep Records') +
   theme(plot.title = element_text(size = 15, hjust = 0.5),
         plot.subtitle = element_text(size = 8)) +
-  annotate('text', x = as.Date('2016-05-04'), y = 9100, 
+  annotate('text', x = as.Date('2016-05-04'), y = 11500, 
            label = paste0('Average Steps: ', round(Steps_Avg_ids_without_sleep_record), '/day'), 
-           colour = 'darkred')
+           colour = 'darkred') +
+  coord_cartesian(ylim = c(0, 11500)) +
+  scale_y_continuous(breaks = c(3000, 6000, 9000, 12000))
 ```
 
 #### 4.3.5 Daily Activity Level Based on Activity Type

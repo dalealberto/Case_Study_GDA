@@ -30,7 +30,7 @@ h5 {color: darkgreen}
 ### Business Task:
 Analyze general customer usage of fitness tracking devices to uncover trends and generate insights that can be applied to Bellabeat's *Time* watch and improve its overall sales.
 
-### Key Insights:*
+### Key Insights:
 
 #### <font color="purple"> **1) Promote the consistent usage of the Time watch to improve fitness results**</font>
 

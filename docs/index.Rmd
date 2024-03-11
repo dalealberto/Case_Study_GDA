@@ -23,31 +23,9 @@ h4 {color: black}
 h5 {color: darkgreen}
 ```
 
-**Note:** This is a case study for the completion of my Google Data Analytics course. All [data](https://www.kaggle.com/datasets/arashnic/FitBit/data) used are real and can be downloaded from Kaggle provided by Mobius. To view the source code to produce this work, please visit my [repository](https://github.com/dalealberto/Case_Study_GDA) on GitHub. This whole case study takes approximately 15 minutes to read thoroughly.
+**Note:** This is a case study for the completion of my Google Data Analytics course. All [data](https://www.kaggle.com/datasets/arashnic/FitBit/data) used are real and can be downloaded from Kaggle provided by Mobius. To view the source code to produce this work, please visit my [repository](https://github.com/dalealberto/Case_Study_GDA) on GitHub. This whole case study takes approximately 15 minutes to read thoroughly. 
 
-## <u> Executive Summary </u>
-
-### Business Task:
-Analyze general customer usage of fitness tracking devices to uncover trends and generate insights that can be applied to Bellabeat's *Time* watch and improve its overall sales.
-
-### Key Insights:
-
-#### <font color="purple"> **1) Promote the consistent usage of the Time watch to improve fitness results**</font>
-
-Data: FitBit users who were [consistent](#sleepmerged) in tracking their fitness and sleep patterns performed more light activity over time compared to users who [did not track their sleep patterns](#nosleepdata) at all
-
-
-
-#### <font color="purple"> **2) Match the timing of marketing strategies to coincide with the average schedules and peak activity times of users based on the day of the week**</font>
-
-Data: FitBit user data shows consistent usage of the device throughout the week, with peaks in [calorie burn](#calories), [intensity](#hourlyintensities), and [heart rate](#heartrate) occurring around 12:00 pm and 7:00 pm.
-
-[Steps](#weekdaysteps) taken and [calories](#weekdaycalories) burned tend to be the lowest on Sundays and the highest on Saturdays, indicating potential opportunities to encourage wellness habits strategically.
-
-
-#### <font color="purple"> **3) Appeal to the broader population by highlighting the sleep tracking capabilities of the *Time* watch**</font>
-
-Data: FitBit users typically start going to [bed](#minutesleep) by 8:00 pm, with most users waking up starting at 05:30 am. Additionally, the average [sleep](#sleep) duration is approximately 7 hours per day, with users getting the most sleep on Sundays.
+Here is the link to the [Executive Summary](https://github.com/dalealberto/Case_Study_GDA/blob/main/ExecutiveSummary/PDF.pdf).
 
 
 ## <u> Introduction: </u>
@@ -746,54 +724,34 @@ Calories_Avg_ids_without_sleep_record <- mean(daily_activity_ids_without_sleep_r
 ```
 
 ```{r 4.3.4 Show Code, echo = TRUE, eval = FALSE}
-# Plot stacked bar graph
-ggplot(daily_activity_ids_without_sleep_record_avg, aes(x = Date)) +
-  geom_bar(aes(y = Steps, fill = 'Steps'), stat = 'identity', color = 'black') +
-  geom_bar(aes(y = Calories, fill = 'Calories'), stat = 'identity', color = 'black') +
+# Plot Steps graph
+ggplot(daily_activity_ids_without_sleep_record_avg, aes(x = Date, y = Steps)) +
+  geom_bar(stat = 'identity', colour = 'black', fill = 'skyblue') +
   geom_hline(yintercept = Steps_Avg_ids_without_sleep_record, linetype = 'dashed', 
              colour = 'red', linewidth = 0.75) +
-  geom_smooth(aes(y = Steps), method = lm, se = FALSE) +
-  geom_hline(yintercept = Calories_Avg_ids_without_sleep_record, linetype = 'dashed', 
-             colour = 'red', linewidth = 0.75) +
-  geom_smooth(aes(y = Calories), method = lm, se = FALSE) +
-  labs(title = 'Daily Steps and Calories', subtitle ='From FitBit Users Without Sleep Records',
-       y = 'Value') +
+  geom_smooth(method = lm, se = FALSE, linewidth = 1.5, colour = 'darkblue') +
+  labs(title = 'Daily Steps', subtitle ='From FitBit Users Without Sleep Records') +
   theme(plot.title = element_text(size = 15, hjust = 0.5),
-        plot.subtitle = element_text(size = 8),
-        legend.title = element_blank()) + 
-  scale_fill_manual(values = c('Steps' = 'skyblue', 'Calories' = 'lightgoldenrod3')) +
-  annotate('text', x = as.Date('2016-04-27'), y = 9100, 
+        plot.subtitle = element_text(size = 8)) +
+  annotate('text', x = as.Date('2016-05-04'), y = 9100, 
            label = paste0('Average Steps: ', round(Steps_Avg_ids_without_sleep_record), '/day'), 
-           colour = 'darkred') +
-  annotate('text', x = as.Date('2016-04-27'), y = -300, 
-           label = paste0('Average Calories Burned: ', round(Calories_Avg_ids_without_sleep_record), '/day'), 
            colour = 'darkred')
 ```
 
-There is a slight downtrend in steps taken and calories burned throughout the month for FitBit users who did not record their sleep patterns at all.
+There is a slight downtrend in steps taken throughout the month for FitBit users who did not record their sleep patterns at all.
 
 ```{r 4.3.4 Output, echo = FALSE, message = FALSE}
-# Plot stacked bar graph
-ggplot(daily_activity_ids_without_sleep_record_avg, aes(x = Date)) +
-  geom_bar(aes(y = Steps, fill = 'Steps'), stat = 'identity', color = 'black') +
-  geom_bar(aes(y = Calories, fill = 'Calories'), stat = 'identity', color = 'black') +
+# Plot Steps graph
+ggplot(daily_activity_ids_without_sleep_record_avg, aes(x = Date, y = Steps)) +
+  geom_bar(stat = 'identity', colour = 'black', fill = 'skyblue') +
   geom_hline(yintercept = Steps_Avg_ids_without_sleep_record, linetype = 'dashed', 
              colour = 'red', linewidth = 0.75) +
-  geom_smooth(aes(y = Steps), method = lm, se = FALSE) +
-  geom_hline(yintercept = Calories_Avg_ids_without_sleep_record, linetype = 'dashed', 
-             colour = 'red', linewidth = 0.75) +
-  geom_smooth(aes(y = Calories), method = lm, se = FALSE) +
-  labs(title = 'Daily Steps and Calories', subtitle ='From FitBit Users Without Sleep Records',
-       y = 'Value') +
+  geom_smooth(method = lm, se = FALSE, linewidth = 1.5, colour = 'darkblue') +
+  labs(title = 'Daily Steps', subtitle ='From FitBit Users Without Sleep Records') +
   theme(plot.title = element_text(size = 15, hjust = 0.5),
-        plot.subtitle = element_text(size = 8),
-        legend.title = element_blank()) + 
-  scale_fill_manual(values = c('Steps' = 'skyblue', 'Calories' = 'lightgoldenrod3')) +
-  annotate('text', x = as.Date('2016-04-27'), y = 9100, 
+        plot.subtitle = element_text(size = 8)) +
+  annotate('text', x = as.Date('2016-05-04'), y = 9100, 
            label = paste0('Average Steps: ', round(Steps_Avg_ids_without_sleep_record), '/day'), 
-           colour = 'darkred') +
-  annotate('text', x = as.Date('2016-04-27'), y = -300, 
-           label = paste0('Average Calories Burned: ', round(Calories_Avg_ids_without_sleep_record), '/day'), 
            colour = 'darkred')
 ```
 

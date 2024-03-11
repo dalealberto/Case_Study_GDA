@@ -1,7 +1,7 @@
 ---
-title: 'Case Study: FitBit Fitness Tracker Data and Bellabeat’s Wellness Technology'
+title: "Case Study: Making data-driven decisions on the marketing strategy of Bellabeat's Time watch based on the trends from public fitness tracking data" 
 author: "David Alberto"
-date: "2024-03-03"
+date: "2024-03-10"
 output: 
   html_document:
     fig_caption: yes
@@ -23,7 +23,32 @@ h4 {color: black}
 h5 {color: darkgreen}
 ```
 
-**Note:** *This is a case study for the completion of my Google Data Analytics course. All [data](https://www.kaggle.com/datasets/arashnic/FitBit/data) used are real and can be downloaded from Kaggle provided by Mobius. To view the source code to produce this work, please visit my [repository](https://github.com/dalealberto/Case_Study_GDA) on GitHub. This whole case study takes approximately 15 minutes to read thoroughly. I encourage you to skip to the [conclusion](#conclusion) section first then start from the introduction since there are a lot of code chunks embedded in this case study (for those who are interested in my process).*
+**Note:** This is a case study for the completion of my Google Data Analytics course. All [data](https://www.kaggle.com/datasets/arashnic/FitBit/data) used are real and can be downloaded from Kaggle provided by Mobius. To view the source code to produce this work, please visit my [repository](https://github.com/dalealberto/Case_Study_GDA) on GitHub. This whole case study takes approximately 15 minutes to read thoroughly.
+
+## <u> Executive Summary </u>
+
+### Business Task:
+Analyze general customer usage of fitness tracking devices to uncover trends and generate insights that can be applied to Bellabeat's *Time* watch and improve its overall sales.
+
+### Key Insights:*
+
+#### <font color="purple"> **1) Promote the consistent usage of the Time watch to improve fitness results**</font>
+
+Data: FitBit users who were [consistent](#sleepmerged) in tracking their fitness and sleep patterns performed more light activity over time compared to users who [did not track their sleep patterns](#nosleepdata) at all
+
+
+
+#### <font color="purple"> **2) Match the timing of marketing strategies to coincide with the average schedules and peak activity times of users based on the day of the week**</font>
+
+Data: FitBit user data shows consistent usage of the device throughout the week, with peaks in [calorie burn](#calories), [intensity](#hourlyintensities), and [heart rate](#heartrate) occurring around 12:00 pm and 7:00 pm.
+
+[Steps](#weekdaysteps) taken and [calories](#weekdaycalories) burned tend to be the lowest on Sundays and the highest on Saturdays, indicating potential opportunities to encourage wellness habits strategically.
+
+
+#### <font color="purple"> **3) Appeal to the broader population by highlighting the sleep tracking capabilities of the *Time* watch**</font>
+
+Data: FitBit users typically start going to [bed](#minutesleep) by 8:00 pm, with most users waking up starting at 05:30 am. Additionally, the average [sleep](#sleep) duration is approximately 7 hours per day, with users getting the most sleep on Sundays.
+
 
 ## <u> Introduction: </u>
 
@@ -35,7 +60,7 @@ As this is a case study for my Google Data Analytics certificate, I will be inco
 
 ### 1.1 Business Task: {#businesstask}
 
-Business Task: Analyze customer usage of smart devices to uncover trends and generate insights that can be applied to **one** Bellabeat product and improve its overall sales.
+Business Task: Analyze general customer usage of fitness tracking devices to uncover trends and generate insights that can be applied to Bellabeat's *Time* watch and improve its overall sales.
 
 ### 1.2 Key Stakeholders:
 
@@ -1837,9 +1862,9 @@ ggplot(heart_rate_peak2_avg,aes(x = Time_24h,y = heartrate)) +
 
 ## <u> Phase 5: Act (Conclusion) </u> {#conclusion}
 
-According to my analysis, I propose three marketing strategy recommendations for Bellabeat, each substantiated by data and accompanied by actionable steps. The focus will be on Bellabeat's *Time* watch, as the [business task](#businesstask) specifically mentions only one product.
+According to my analysis, I propose three marketing strategy recommendations for Bellabeat's *Time* watch, each substantiated by data and accompanied by actionable steps. 
 
-#### <font color="purple">**1. Promote the use of Bellabeat's *Time* watch for fitness tracking to drive better health outcomes:**</font>
+#### <font color="purple">**1. Promote the consistent usage of the *Time* watch to improve fitness results:**</font>
 
 +--------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | **Data**                 | Those who consistently wore their FitBit device even [during sleep](#sleepmerged) demonstrated a sustained increase in physical activity over time compared to those who [didn't record their sleep](#nosleepdata).                                                                                                                          |
@@ -1857,7 +1882,7 @@ According to my analysis, I propose three marketing strategy recommendations for
 |                          | Their increase in light physical activity over time may not actually be due to them wearing the FitBit device, but rather due to their inherent motivation to be healthier. This motivation may have simply just affected their choice to record every aspect of their journey, including their sleep patterns (correlation, not causation). |
 +--------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-#### <font color="purple">**2. Adjust marketing strategies to fit the average schedules and peak activity times of users based on the day of the week**</font>
+#### <font color="purple">**2. Match the timing of marketing strategies to coincide with the average schedules and peak activity times of users based on the day of the week**</font>
 
 +----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | **Data**             | FitBit user data shows consistent usage of the device throughout the week, with peaks in [calorie burn](#calories), [intensity](#hourlyintensities), and [heart rate](#heartrate) occurring around 12:00 pm and 7:00 pm.                                                                                                                                                                                                                                                                                         |
@@ -1875,7 +1900,7 @@ According to my analysis, I propose three marketing strategy recommendations for
 |                      | -   Additionally, relying solely on FitBit user data for promotional strategies may overlook potential users who do not use fitness tracking devices or who have different activity patterns. This could lead to a lack of inclusivity in marketing efforts and limit the reach of Bellabeat's promotional campaigns.                                                                                                                                                                                            |
 +----------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-#### <font color="purple"> **3. Hightlight the sleep tracking capabilities of the *Time* watch to appeal to individuals who may not have initially considered it for its fitness-related features** </font>
+#### <font color="purple"> **3. Appeal to the broader population by highlighting the sleep tracking capabilities of the *Time* watch** </font>
 
 +----------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | **Data**             | FitBit users typically start going to [bed](#minutesleep) by 8:00 pm, with most users waking up starting at 05:30 am. Additionally, the average [sleep](#sleep) duration is approximately 7 hours per day, with users getting the most sleep on Sundays. |
